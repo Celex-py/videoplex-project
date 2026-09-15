@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(VIEWER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  channel   Channel?
+}
+
+model Channel {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  logo        String?
+  banner      String?
+  ownerId     String   @unique
+  owner       User     @relation(fields: [ownerId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  videos      Video[]
+  playlists   Playlist[]
+  liveStreams  LiveStream[]
+}
+
+model Video {
+  id            String      @id @default(cuid())
+  title         String
+  description   String?
+  thumbnail     String?
+  duration      Int?
+  status        VideoStatus @default(PROCESSING)
+  visibility    Visibility  @default(PUBLIC)
+  views         Int         @default(0)
+  channelId     String
+  channel       Channel     @relation(fields: [channelId], references: [id])
+  muxAssetId    String?     @unique
+  muxPlaybackId String?
+  streamUrl     String?
+  liveStreamId  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  playlistItems PlaylistItem[]
+}
+
+model Playlist {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  thumbnail   String?
+  channelId   String
+  channel     Channel  @relation(fields: [channelId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       PlaylistItem[]
+}
+
+model PlaylistItem {
+  id         String   @id @default(cuid())
+  playlistId String
+  videoId    String
+  order      Int
+  playlist   Playlist @relation(fields: [playlistId], references: [id])
+  video      Video    @relation(fields: [videoId], references: [id])
+
+  @@unique([playlistId, videoId])
+  @@unique([playlistId, order])
+}
+
+model LiveStream {
+  id              String     @id @default(cuid())
+  title           String
+  description     String?
+  scheduledAt     DateTime?
+  startedAt       DateTime?
+  endedAt         DateTime?
+  status          LiveStatus @default(SCHEDULED)
+  streamKey       String     @unique
+  ingestUrl       String?
+  playbackId      String?
+  channelId       String
+  channel         Channel    @relation(fields: [channelId], references: [id])
+  recordedVideoId String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+enum Role {
+  VIEWER
+  OWNER
+  ADMIN
+}
+
+enum VideoStatus {
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum Visibility {
+  PUBLIC
+  UNLISTED
+  PRIVATE
+}
+
+enum LiveStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+  RECORDED
+}

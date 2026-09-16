@@ -15,53 +15,103 @@ function initials(name = '') {
 function LivePlayer({ channel, onClose }) {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
+  const retryTimerRef = useRef(null);
   const [state, setState] = useState('loading');
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !channel?.streamUrl) return undefined;
+    let cancelled = false;
     setState('loading');
 
+    const cleanup = () => {
+      if (retryTimerRef.current) window.clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+        hlsRef.current = null;
+      }
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    };
+
+    const retryHls = (hls) => {
+      if (cancelled) return;
+      setState('loading');
+      try { hls.startLoad(-1); } catch (_) {}
+      retryTimerRef.current = window.setTimeout(() => {
+        if (!cancelled && video.readyState < 2) setState('error');
+      }, 12000);
+    };
+
+    // Safari/iOS has a native HLS implementation; use it first there.
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = channel.streamUrl;
-      const onLoaded = () => setState('ready');
-      const onError = () => setState('error');
+      const onLoaded = () => { if (!cancelled) { setState('ready'); video.play().catch(() => {}); } };
+      const onError = () => { if (!cancelled) setState('error'); };
       video.addEventListener('loadedmetadata', onLoaded);
       video.addEventListener('error', onError);
-      video.play().catch(() => {});
       return () => {
-        video.pause();
-        video.removeAttribute('src');
-        video.load();
+        cancelled = true;
         video.removeEventListener('loadedmetadata', onLoaded);
         video.removeEventListener('error', onError);
+        cleanup();
       };
     }
 
     if (Hls.isSupported()) {
-      const hls = new Hls({ enableWorker: true, lowLatencyMode: true, maxBufferLength: 12 });
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: false,
+        backBufferLength: 30,
+        maxBufferLength: 30,
+        maxMaxBufferLength: 60,
+        manifestLoadingMaxRetry: 3,
+        manifestLoadingRetryDelay: 1000,
+        levelLoadingMaxRetry: 4,
+        levelLoadingRetryDelay: 1000,
+        fragLoadingMaxRetry: 5,
+        fragLoadingRetryDelay: 1000,
+        fragLoadingTimeOut: 20000,
+        manifestLoadingTimeOut: 15000,
+        levelLoadingTimeOut: 15000,
+      });
       hlsRef.current = hls;
       hls.loadSource(channel.streamUrl);
       hls.attachMedia(video);
+
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        if (cancelled) return;
         setState('ready');
         video.play().catch(() => {});
       });
       hls.on(Hls.Events.ERROR, (_event, data) => {
-        if (data.fatal) setState('error');
+        if (cancelled || !data.fatal) return;
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+          retryHls(hls);
+        } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+          try { hls.recoverMediaError(); } catch (_) { setState('error'); }
+        } else {
+          setState('error');
+        }
       });
+
       return () => {
-        hls.destroy();
-        hlsRef.current = null;
-        video.pause();
-        video.removeAttribute('src');
-        video.load();
+        cancelled = true;
+        cleanup();
       };
     }
 
     setState('unsupported');
-    return undefined;
-  }, [channel]);
+    return cleanup;
+  }, [channel, attempt]);
+
+  const retry = () => {
+    setState('loading');
+    setAttempt(value => value + 1);
+  };
 
   return (
     <div className="iptv-modal" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -74,10 +124,10 @@ function LivePlayer({ channel, onClose }) {
           <button className="btn bg" onClick={onClose}>Close</button>
         </div>
         <div className="iptv-player-stage">
-          <video ref={videoRef} controls playsInline />
-          {state === 'loading' && <div className="iptv-player-state"><div className="spinner" />Connecting to stream…</div>}
-          {state === 'error' && <div className="iptv-player-state"><div style={{ fontSize: 24 }}>⚠</div><div>That channel is currently unavailable.</div><button className="btn bg" onClick={() => window.location.reload()}>Try again</button></div>}
-          {state === 'unsupported' && <div className="iptv-player-state"><div style={{ fontSize: 24 }}>▶</div><div>This browser cannot play this live stream.</div></div>}
+          <video ref={videoRef} controls playsInline preload="auto" />
+          {state === 'loading' && <div className="iptv-player-state"><div className="spinner" /><div>Connecting to stream…</div><small>Trying the HLS stream</small></div>}
+          {state === 'error' && <div className="iptv-player-state"><div style={{ fontSize: 24 }}>⚠</div><div>That stream could not be played right now.</div><small>The channel provider may be offline or blocking browser playback.</small><button className="btn bg" onClick={retry}>Try stream again</button></div>}
+          {state === 'unsupported' && <div className="iptv-player-state"><div style={{ fontSize: 24 }}>▶</div><div>This browser does not support HLS playback.</div></div>}
         </div>
         <div className="iptv-player-meta">
           <div className="iptv-logo-small">{channel.logo ? <img src={channel.logo} alt="" /> : initials(channel.name)}</div>

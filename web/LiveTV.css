@@ -1,0 +1,46 @@
+.iptv-section{margin-top:28px;padding-top:22px;border-top:1px solid rgba(255,255,255,.06)}
+.iptv-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:13px}
+.iptv-kicker{display:flex;align-items:center;gap:6px;color:#ff7a50;font-size:9px;letter-spacing:1.4px;font-weight:600;margin-bottom:5px}
+.iptv-kicker span,.iptv-live-badge span{width:6px;height:6px;border-radius:50%;background:#d94040;display:inline-block;animation:pp 1.3s ease-in-out infinite}
+.iptv-heading h2{font-family:'Syne',sans-serif;font-size:17px;letter-spacing:-.5px;margin-bottom:3px}
+.iptv-heading p{font-size:10px;color:#5c5a6e;line-height:1.5}
+.iptv-count{font-size:9px;color:#5c5a6e;white-space:nowrap}
+.iptv-controls{display:flex;gap:7px;margin-bottom:13px}
+.iptv-search{position:relative;flex:1;min-width:150px}
+.iptv-search span{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#5c5a6e;font-size:12px}
+.iptv-search input,.iptv-controls select{width:100%;height:31px;background:#111114;border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#f0eff4;padding:0 10px;font:10px 'DM Sans',sans-serif;outline:none}
+.iptv-search input{padding-left:28px}
+.iptv-controls select{width:145px;cursor:pointer}
+.iptv-controls option{background:#18181c}
+.iptv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:11px}
+.iptv-card{padding:0;text-align:left;border:1px solid rgba(255,255,255,.06);background:#111114;border-radius:10px;overflow:hidden;cursor:pointer;color:#f0eff4;transition:transform .17s,border-color .17s;width:100%}
+.iptv-card:hover{transform:translateY(-2px);border-color:rgba(224,92,47,.35)}
+.iptv-thumb{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#151520,#1c1c2e);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.iptv-thumb img{width:62%;height:62%;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 5px 16px rgba(0,0,0,.4))}
+.iptv-fallback-logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;position:relative;z-index:1}
+.iptv-thumb-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.55));z-index:2}
+.iptv-live-badge{position:absolute;top:7px;left:7px;z-index:3;display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.78);padding:3px 6px;border-radius:4px;font-size:8px;font-weight:600;letter-spacing:.5px}
+.iptv-play{position:absolute;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);color:#111;display:flex;align-items:center;justify-content:center;padding-left:2px;font-size:12px;opacity:0;transform:scale(.9);transition:.17s}
+.iptv-card:hover .iptv-play{opacity:1;transform:scale(1)}
+.iptv-info{padding:8px 9px 10px;display:flex;gap:7px;align-items:center}
+.iptv-channel-avatar{width:27px;height:27px;flex:0 0 27px;border-radius:50%;background:#18181c;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:8px;font-weight:700;color:#9896a6}
+.iptv-channel-avatar img{width:100%;height:100%;object-fit:contain}
+.iptv-copy{min-width:0}
+.iptv-name{font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.iptv-sub{font-size:8px;color:#5c5a6e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iptv-more{display:flex;justify-content:center;padding:16px 0 4px}
+.iptv-state{min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#5c5a6e;font-size:10px}
+.iptv-modal{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.76);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:20px}
+.iptv-player-card{width:min(900px,96vw);background:#0f0f12;border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.iptv-player-head{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.06)}
+.iptv-live-pill{display:flex;align-items:center;gap:5px;color:#d94040;font-size:8px;font-weight:600;letter-spacing:1px;margin-bottom:3px}
+.iptv-player-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700}
+.iptv-player-stage{position:relative;background:#000;aspect-ratio:16/9}
+.iptv-player-stage video{width:100%;height:100%;display:block;background:#000}
+.iptv-player-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;color:#9896a6;font-size:10px;text-align:center}
+.iptv-player-meta{display:flex;align-items:center;gap:9px;padding:10px 13px}
+.iptv-logo-small{width:31px;height:31px;border-radius:50%;background:#18181c;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:8px;font-weight:700}
+.iptv-logo-small img{width:100%;height:100%;object-fit:contain}
+.iptv-player-name{font-size:11px;font-weight:500}
+.iptv-player-sub{font-size:9px;color:#5c5a6e;margin-top:2px}
+@media(max-width:650px){.iptv-controls{flex-direction:column}.iptv-controls select{width:100%}.iptv-heading{align-items:flex-start;flex-direction:column}.iptv-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.iptv-section{margin-top:20px}.iptv-modal{padding:8px}}

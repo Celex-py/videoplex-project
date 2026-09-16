@@ -6,7 +6,7 @@ const STREAMS = [
   { id: 'sintel', name: 'Sintel Trailer', type: 'mp4', url: 'https://media.w3.org/2010/05/sintel/trailer.mp4', meta: 'Featured video' },
   { id: 'kntv', name: 'KN TV', type: 'hls', url: 'https://cdn4.yayin.com.tr/kntv/tracks-v1a1/mono.m3u8', meta: 'Live stream' },
   { id: 'football', name: 'Football Spotlight', type: 'webm', url: 'https://upload.wikimedia.org/wikipedia/commons/f/fe/VIDEO-2026-05-21-22-53-29.webm', meta: 'Football video' },
-  { id: 'random', name: 'Big Buck Bunny', type: 'mp4', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', meta: 'Featured video' },
+  { id: 'city-life', name: 'Big City Life', type: 'webm', url: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Big_City_Life.webm', meta: 'City video' },
   { id: 'aforevo', name: 'Aforevo Live', type: 'hls', url: 'https://feeds.aforevo.com/masslink/r=live_65323240f20911ee95dad7a8d3bcb8ba/playlist.m3u8', meta: 'Live stream' },
 ];
 

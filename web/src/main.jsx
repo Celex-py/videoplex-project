@@ -6,6 +6,7 @@ import LiveTV from "../LiveTV.jsx";
 import FeaturedStreams from "../FeaturedStreams.jsx";
 import "../LiveTV.css";
 import "../FeaturedStreams.css";
+import "../Theme.css";
 
 function HomeMount({ children }) {
   const [host, setHost] = useState(null);

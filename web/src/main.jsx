@@ -4,8 +4,10 @@ import { createPortal } from "react-dom";
 import App from "../App.jsx";
 import LiveTV from "../LiveTV.jsx";
 import FeaturedStreams from "../FeaturedStreams.jsx";
+import HeroCarousel from "../HeroCarousel.jsx";
 import "../LiveTV.css";
 import "../FeaturedStreams.css";
+import "../HeroCarousel.css";
 import "../Theme.css";
 
 function HomeMount({ children }) {
@@ -32,7 +34,7 @@ function Root() {
   return (
     <React.StrictMode>
       <App />
-      <HomeMount><FeaturedStreams /><LiveTV /></HomeMount>
+      <HomeMount><HeroCarousel /><FeaturedStreams /><LiveTV /></HomeMount>
     </React.StrictMode>
   );
 }

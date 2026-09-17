@@ -5,18 +5,11 @@ import './FeaturedStreams.css';
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 const STREAMS = [
-  { id: 'sintel', name: 'Sintel Trailer', type: 'mp4', url: 'https://media.w3.org/2010/05/sintel/trailer.mp4', meta: 'Featured video' },
-  {
-    id: 'kntv',
-    name: 'KN TV',
-    type: 'hls',
-    url: 'https://cdn4.yayin.com.tr/kntv/tracks-v1a1/mono.m3u8',
-    alternatives: ['https://cdn-1.pishow.tv/live/965/master.m3u8'],
-    meta: 'Live stream',
-  },
-  { id: 'football', name: 'Football Spotlight', type: 'webm', url: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Latvia-Gibraltar%20football%202026-03-31.webm', meta: 'Football match preview' },
-  { id: 'city-life', name: 'Big City Life', type: 'webm', url: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Big_City_Life.webm', meta: 'City video' },
-  { id: 'aforevo', name: 'Aforevo Live', type: 'hls', url: 'https://feeds.aforevo.com/masslink/r=live_65323240f20911ee95dad7a8d3bcb8ba/playlist.m3u8', meta: 'Live stream' },
+  { id: 'sintel', name: 'Sintel Trailer', type: 'mp4', url: 'https://media.w3.org/2010/05/sintel/trailer.mp4', meta: 'Featured video', thumbnail: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=80' },
+  { id: 'kntv', name: 'KN TV', type: 'hls', url: 'https://cdn4.yayin.com.tr/kntv/tracks-v1a1/mono.m3u8', alternatives: ['https://cdn-1.pishow.tv/live/965/master.m3u8'], meta: 'Live stream', thumbnail: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=900&q=80' },
+  { id: 'football', name: 'Football Spotlight', type: 'webm', url: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Latvia-Gibraltar%20football%202026-03-31.webm', meta: 'Football match preview', thumbnail: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=900&q=80' },
+  { id: 'city-life', name: 'Big City Life', type: 'webm', url: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Big_City_Life.webm', meta: 'City video', thumbnail: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=900&q=80' },
+  { id: 'aforevo', name: 'Aforevo Live', type: 'hls', url: 'https://feeds.aforevo.com/masslink/r=live_65323240f20911ee95dad7a8d3bcb8ba/playlist.m3u8', meta: 'Live stream', thumbnail: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=900&q=80' },
 ];
 
 function isHls(stream) { return stream.type === 'hls'; }
@@ -104,7 +97,12 @@ export default function FeaturedStreams() {
       {STREAMS.map(stream => {
         const status = statuses[stream.id] || 'checking'; const label = status === 'active' ? 'ACTIVE' : status === 'error' ? 'OFFLINE' : 'CHECKING';
         return <button className="featured-card" data-stream-id={stream.id} key={stream.id} onClick={() => setActive(stream)}>
-          <div className="featured-thumb"><StreamPreview stream={stream} onStatus={value => updateStatus(stream.id, value)} /><div className="featured-play">▶</div><span className={`featured-badge status-${status}`}><span className="featured-status-dot" />{isHls(stream) ? 'LIVE' : 'PREVIEW'} · {label}</span></div>
+          <div className="featured-thumb">
+            <img className="featured-thumb-image" src={stream.thumbnail} alt="" aria-hidden="true" />
+            <StreamPreview stream={stream} onStatus={value => updateStatus(stream.id, value)} />
+            <div className="featured-play">▶</div>
+            <span className={`featured-badge status-${status}`}><span className="featured-status-dot" />{isHls(stream) ? 'LIVE' : 'PREVIEW'} · {label}</span>
+          </div>
           <div className="featured-info"><strong>{stream.name}</strong><span>{stream.meta}{stream.alternatives?.length ? ' · fallback available' : ''}</span></div>
         </button>;
       })}

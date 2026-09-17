@@ -48,7 +48,7 @@ const SLIDES = [
     category: "MOVIES & CARTOONS",
     title: "Movies & Cartoons",
     description: "Blockbusters for movie night and colorful animated adventures for the whole family.",
-    image: "https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?auto=format&fit=crop&w=1800&q=85",
+    image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1800&q=85",
     kicker: "FAMILY NIGHT",
     meta: "Blockbusters · Animation · Kids",
   },

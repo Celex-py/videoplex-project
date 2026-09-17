@@ -4,7 +4,6 @@ import "./HeroCarousel.css";
 const SLIDES = [
   {
     id: "home",
-    category: "VIDEOPLEX ORIGINAL",
     title: "Your Streaming Platform",
     description: "Trending movies, shows, live channels and creator streams — all in one place, ready when you are.",
     image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1800&q=85",
@@ -13,7 +12,6 @@ const SLIDES = [
   },
   {
     id: "news",
-    category: "LIVE NEWS",
     title: "News",
     description: "Stay ahead with breaking stories, live alerts and rolling coverage from around the world.",
     image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1800&q=85",
@@ -23,7 +21,6 @@ const SLIDES = [
   },
   {
     id: "football",
-    category: "LIVE SPORTS",
     title: "Live Football",
     description: "Catch the action with live score tickers, match coverage and the fixtures everyone is watching.",
     image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1800&q=85",
@@ -34,7 +31,6 @@ const SLIDES = [
   },
   {
     id: "music",
-    category: "MUSIC",
     title: "Music Videos",
     description: "Turn up the volume with fresh releases, neon visuals, album art and artist spotlights.",
     image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1800&q=85",
@@ -45,7 +41,6 @@ const SLIDES = [
   },
   {
     id: "movies",
-    category: "MOVIES & CARTOONS",
     title: "Movies & Cartoons",
     description: "Blockbusters for movie night and colorful animated adventures for the whole family.",
     image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1800&q=85",
@@ -68,11 +63,6 @@ export default function HeroCarousel() {
     const timer = window.setInterval(next, 7000);
     return () => window.clearInterval(timer);
   }, [paused]);
-
-  const watchNow = () => {
-    const target = document.querySelector(".featured-streams") || document.querySelector(".vgrid");
-    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   const onTouchStart = (event) => {
     touchStart.current = event.touches[0]?.clientX ?? null;
@@ -105,7 +95,6 @@ export default function HeroCarousel() {
 
       <div className="hero-carousel-content">
         <div className="hero-carousel-copy">
-          <span className="hero-carousel-category"><span className="hero-live-dot" />{slide.category}</span>
           <span className="hero-carousel-kicker">{slide.kicker}</span>
           <h2>{slide.title}</h2>
           <p>{slide.description}</p>
@@ -130,10 +119,7 @@ export default function HeroCarousel() {
             </div>
           )}
 
-          <div className="hero-carousel-actions">
-            <button className="hero-watch" onClick={watchNow}>Watch Now <span>›</span></button>
-            <span className="hero-meta">{slide.meta}</span>
-          </div>
+          <span className="hero-meta">{slide.meta}</span>
         </div>
       </div>
 

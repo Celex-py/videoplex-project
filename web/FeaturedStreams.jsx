@@ -14,7 +14,7 @@ const STREAMS = [
     alternatives: ['https://cdn-1.pishow.tv/live/965/master.m3u8'],
     meta: 'Live stream',
   },
-  { id: 'football', name: 'Football Spotlight', type: 'webm', url: 'https://upload.wikimedia.org/wikipedia/commons/f/fe/VIDEO-2026-05-21-22-53-29.webm', meta: 'Football video' },
+  { id: 'football', name: 'Football Spotlight', type: 'webm', url: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Latvia-Gibraltar%20football%202026-03-31.webm', meta: 'Football match preview' },
   { id: 'city-life', name: 'Big City Life', type: 'webm', url: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Big_City_Life.webm', meta: 'City video' },
   { id: 'aforevo', name: 'Aforevo Live', type: 'hls', url: 'https://feeds.aforevo.com/masslink/r=live_65323240f20911ee95dad7a8d3bcb8ba/playlist.m3u8', meta: 'Live stream' },
 ];
@@ -119,7 +119,10 @@ function StreamPreview({ stream, onStatus }) {
       autoPlay
       loop={!isHls(stream)}
       playsInline
-      preload="metadata"
+      preload="auto"
+      controls={false}
+      disablePictureInPicture
+      aria-hidden="true"
     />
   );
 }
@@ -221,7 +224,7 @@ function Player({ stream, onClose }) {
     <div className="featured-modal" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="featured-player-card">
         <div className="featured-player-head">
-          <div><span className={`featured-live-dot ${status === 'ready' ? 'is-active' : ''}`} /> {isHls(stream) ? 'LIVE' : 'VIDEO'}<h3>{stream.name}</h3></div>
+          <div><span className={`featured-live-dot ${status === 'ready' ? 'is-active' : ''}`} /> {isHls(stream) ? 'LIVE' : 'PREVIEW'}<h3>{stream.name}</h3></div>
           <button onClick={onClose}>Close</button>
         </div>
         <div className="featured-stage">
@@ -257,7 +260,7 @@ export default function FeaturedStreams() {
               <div className="featured-thumb">
                 <StreamPreview stream={stream} onStatus={value => updateStatus(stream.id, value)} />
                 <div className="featured-play">▶</div>
-                <span className={`featured-badge status-${status}`}><span className="featured-status-dot" />{isHls(stream) ? 'LIVE' : 'VIDEO'} · {label}</span>
+                <span className={`featured-badge status-${status}`}><span className="featured-status-dot" />{isHls(stream) ? 'LIVE' : 'PREVIEW'} · {label}</span>
               </div>
               <div className="featured-info"><strong>{stream.name}</strong><span>{stream.meta}{stream.alternatives?.length ? ' · fallback available' : ''}</span></div>
             </button>

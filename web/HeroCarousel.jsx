@@ -4,7 +4,7 @@ import "./HeroCarousel.css";
 const SLIDES = [
   {
     id: "home",
-    category: "VIZIOPLEX ORIGINAL",
+    category: "VIDEOPLEX ORIGINAL",
     title: "Your Streaming Platform",
     description: "Trending movies, shows, live channels and creator streams — all in one place, ready when you are.",
     image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1800&q=85",

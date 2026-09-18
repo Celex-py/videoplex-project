@@ -46,14 +46,8 @@ export default function HeroCarousel() {
 
       <div className="hero-carousel-content">
         <div className="hero-carousel-copy">
-          <span className="hero-carousel-kicker">{slide.kicker}</span>
           <h2>{slide.title}</h2>
           <p>{slide.description}</p>
-          {slide.id === "news" && <div className="hero-news-ticker"><b>LIVE</b><span>{slide.ticker}</span></div>}
-          {slide.id === "football" && <div className="hero-football-meta"><div className="hero-score">{slide.score}</div><div className="hero-fixture">{slide.fixture}</div></div>}
-          {slide.id === "music" && <div className="hero-music-meta"><div className="hero-album-art">♪</div><div><strong>{slide.artist}</strong><span>{slide.track}</span></div></div>}
-          {slide.id === "movies" && <div className="hero-family-posters" aria-hidden="true"><span className="hero-poster movie-poster">BLOCKBUSTER</span><span className="hero-poster cartoon-poster">TOON<br />WORLD</span></div>}
-          <span className="hero-meta">{slide.meta}</span>
         </div>
       </div>
 

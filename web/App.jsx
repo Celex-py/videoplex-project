@@ -156,9 +156,19 @@ const S = `
 .upcta:hover{border-color:rgba(224,92,47,.35);background:rgba(224,92,47,.03);}
 .upctai{width:38px;height:38px;border-radius:50%;background:rgba(224,92,47,.1);border:1px solid rgba(224,92,47,.22);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
 .upctap{margin-left:auto;padding:4px 11px;background:#e05c2f;color:#fff;border-radius:5px;font-size:10px;font-weight:500;}
-.pv{border-radius:10px;overflow:hidden;position:relative;background:#000;aspect-ratio:16/9;}
-.pv video{width:100%;height:100%;object-fit:contain;background:#000;}
-.pv-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:#9896a6;font-size:11px;text-align:center;padding:20px;}
+.pv{border-radius:20px;overflow:hidden;position:relative;background:#000;aspect-ratio:16/9;isolation:isolate;box-shadow:0 18px 50px rgba(0,0,0,.38);}
+.premium-player{position:absolute;inset:0;overflow:hidden;background:#000;border-radius:20px}
+.premium-player video{width:100%;height:100%;display:block;object-fit:contain;background:#000}
+.premium-player::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.58),rgba(0,0,0,.06) 28%,rgba(0,0,0,.02) 55%,rgba(0,0,0,.72))}
+.premium-player-ui{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;justify-content:space-between;padding:16px 18px 14px;transition:opacity .22s ease}
+.premium-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(14,16,20,.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:12px;font-weight:500;line-height:1;box-shadow:0 5px 18px rgba(0,0,0,.18)}
+.premium-player-top{display:flex;align-items:center;gap:8px}.premium-pill.live span{width:6px;height:6px;border-radius:50%;background:#ef3340;box-shadow:0 0 0 3px rgba(239,51,64,.14)}
+.premium-player-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.premium-play{width:60px;height:60px;border:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;color:#111;box-shadow:0 10px 30px rgba(0,0,0,.35);cursor:pointer;font-size:22px;padding-left:3px;pointer-events:auto;transition:transform .18s ease,box-shadow .18s ease}.premium-play:hover{transform:scale(1.04);box-shadow:0 12px 34px rgba(0,0,0,.45)}.premium-play.is-pause{font-size:19px;padding-left:0}
+.premium-player-bottom{display:flex;flex-direction:column;gap:9px}.premium-progress{height:4px;width:100%;appearance:none;border:0;border-radius:99px;background:rgba(255,255,255,.28);overflow:hidden;cursor:pointer;accent-color:#fff}.premium-progress::-webkit-slider-runnable-track{height:4px;background:transparent}.premium-progress::-webkit-slider-thumb{appearance:none;width:0;height:4px;background:#fff;box-shadow:-1000px 0 0 1000px #fff}.premium-progress::-moz-range-track{height:4px;background:rgba(255,255,255,.28);border:0}.premium-progress::-moz-range-progress{height:4px;background:#fff}.premium-progress::-moz-range-thumb{width:0;height:0;border:0;background:transparent}
+.premium-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;color:#fff}.premium-time{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.86);white-space:nowrap}.premium-control-group{display:flex;align-items:center;gap:7px}.premium-control{display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 9px;background:rgba(14,16,20,.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:rgba(255,255,255,.9);font-size:11px;line-height:1;cursor:pointer}.premium-control:hover{background:rgba(255,255,255,.12);color:#fff}.premium-control-icon{font-size:11px;line-height:1}
+.pv-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:#9896a6;font-size:11px;text-align:center;padding:20px}
+@media(max-width:700px){.premium-player-ui{padding:12px}.premium-pill{font-size:11px;padding:5px 10px}.premium-play{width:54px;height:54px;font-size:20px}.premium-control{font-size:10px;padding:5px 8px}.premium-time{font-size:10px}}
 .ptitle{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:-.3px;margin:11px 0 6px;}
 .pmeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px;}
 .pch{display:flex;align-items:center;gap:7px;flex:1;}
@@ -174,6 +184,33 @@ function defaultApiGuess() {
     return "http://localhost:4000";
   }
   return "";
+}
+
+function PremiumVideoPlayer({ src, title }) {
+  const videoRef = useRef(null), idleRef = useRef(null);
+  const [playing,setPlaying]=useState(false), [current,setCurrent]=useState(0), [duration,setDuration]=useState(0);
+  const [controlsVisible,setControlsVisible]=useState(true), [fit,setFit]=useState("contain");
+  const showControls=useCallback(()=>{setControlsVisible(true);clearTimeout(idleRef.current);idleRef.current=setTimeout(()=>setControlsVisible(false),3000);},[]);
+  useEffect(()=>{showControls();return()=>clearTimeout(idleRef.current);},[showControls,src]);
+  useEffect(()=>{const v=videoRef.current;if(!v)return;const t=()=>setCurrent(v.currentTime||0),d=()=>setDuration(Number.isFinite(v.duration)?v.duration:0),p=()=>setPlaying(true),q=()=>setPlaying(false);v.addEventListener("timeupdate",t);v.addEventListener("loadedmetadata",d);v.addEventListener("durationchange",d);v.addEventListener("play",p);v.addEventListener("pause",q);return()=>{v.removeEventListener("timeupdate",t);v.removeEventListener("loadedmetadata",d);v.removeEventListener("durationchange",d);v.removeEventListener("play",p);v.removeEventListener("pause",q);};},[src]);
+  const togglePlay=()=>{const v=videoRef.current;if(!v)return;if(v.paused)v.play().catch(()=>{});else v.pause();showControls();};
+  const seek=e=>{const value=Number(e.target.value);if(videoRef.current&&Number.isFinite(value))videoRef.current.currentTime=value;setCurrent(value);showControls();};
+  const formatTime=value=>{if(!Number.isFinite(value)||value<0)return"00:00";const total=Math.floor(value),hours=Math.floor(total/3600),minutes=Math.floor((total%3600)/60),seconds=total%60;return hours>0?hours+":"+String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0"):String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0");};
+  return <div className="premium-player" onMouseMove={showControls} onMouseEnter={showControls}>
+    <video ref={videoRef} src={src} playsInline preload="metadata" style={{objectFit:fit}} aria-label={title||"Videoplex video"}/>
+    <div className="premium-player-ui" style={{opacity:controlsVisible?1:0,pointerEvents:controlsVisible?"auto":"none"}}>
+      <div className="premium-player-top"><div className="premium-pill live"><span/> LIVE</div><div className="premium-pill">VIDEOPLEX</div></div>
+      <div className="premium-player-center"><button type="button" className={`premium-play${playing?" is-pause":""}`} onClick={togglePlay} aria-label={playing?"Pause":"Play"}>{playing?"Ⅱ":"▶"}</button></div>
+      <div className="premium-player-bottom">
+        <input className="premium-progress" type="range" min="0" max={duration||0} step="0.1" value={Math.min(current,duration||0)} onChange={seek} aria-label="Video progress"/>
+        <div className="premium-controls"><div className="premium-time">{formatTime(current)}</div><div className="premium-control-group">
+          <button type="button" className="premium-control" onClick={()=>setFit(v=>v==="contain"?"cover":"contain")}><span className="premium-control-icon">◫</span> Fit</button>
+          <button type="button" className="premium-control"><span className="premium-control-icon">◉</span> Language</button>
+          <button type="button" className="premium-control"><span className="premium-control-icon">HD</span> 1080P</button>
+        </div><div className="premium-time">{formatTime(duration)}</div></div>
+      </div>
+    </div>
+  </div>;
 }
 
 export default function App() {
@@ -641,9 +678,9 @@ export default function App() {
               <div className="pv">
                 {activeVideo.status === "READY" && (activeVideo.streamUrl || activeVideo.muxPlaybackId) ? (
                   activeVideo.streamUrl ? (
-  <video controls src={activeVideo.streamUrl} />
+  <PremiumVideoPlayer src={activeVideo.streamUrl} title={activeVideo.title} />
 ) : canPlayHls ? (
-  <video controls src={`https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`} />
+  <PremiumVideoPlayer src={`https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`} title={activeVideo.title} />
 ) : (
                     <div className="pv-fallback">
                       <div style={{ fontSize: 24 }}>▶</div>

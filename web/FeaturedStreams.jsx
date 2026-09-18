@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Hls from 'hls.js';
 import './FeaturedStreams.css';
 
-const API_BASE = String(import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && !['localhost','127.0.0.1'].includes(window.location.hostname) ? window.location.origin : 'http://localhost:4000')).replace(/\/$/, '');
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 const STREAMS = [
   { id: 'sintel', name: 'Sintel Trailer', type: 'mp4', url: 'https://media.w3.org/2010/05/sintel/trailer.mp4', meta: 'Featured video', thumbnail: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=80' },
@@ -35,8 +35,8 @@ function StreamPreview({ stream, onStatus }) {
     const trySource = () => {
       if (destroyed) return;
       const source = sources[sourceIndexRef.current];
-      if (!source) { onStatus(stream.id, 'error'); return; }
-      onStatus(stream.id, 'checking');
+      if (!source) { onStatus('error'); return; }
+      onStatus('checking');
       if (hlsRef.current) { hlsRef.current.destroy(); hlsRef.current = null; }
       if (isHls(stream)) {
         const proxied = mediaUrl(stream, source);
@@ -50,7 +50,7 @@ function StreamPreview({ stream, onStatus }) {
         }
       } else { video.src = source; video.play().catch(() => {}); }
     };
-    const handlePlaying = () => onStatus(stream.id, 'active');
+    const handlePlaying = () => onStatus('active');
     const handleError = () => { sourceIndexRef.current += 1; trySource(); };
     video.addEventListener('playing', handlePlaying); video.addEventListener('error', handleError); trySource();
     return () => { destroyed = true; video.removeEventListener('playing', handlePlaying); video.removeEventListener('error', handleError); cleanup(); };
@@ -90,7 +90,7 @@ function Player({ stream, onClose }) {
 
 export default function FeaturedStreams() {
   const [active, setActive] = useState(null); const [statuses, setStatuses] = useState({});
-  const updateStatus = useCallback((id, status) => setStatuses(prev => ({ ...prev, [id]: status })), []);
+  const updateStatus = (id, status) => setStatuses(prev => ({ ...prev, [id]: status }));
   return <section className="featured-streams">
     <div className="featured-heading"><div><div className="featured-kicker"><span /> CURATED</div><h2>Spotlight Streams</h2><p>A small hand-picked collection, separate from the main Live TV library.</p></div><span className="featured-count">{STREAMS.length} streams</span></div>
     <div className="featured-grid">
@@ -99,7 +99,7 @@ export default function FeaturedStreams() {
         return <button className="featured-card" data-stream-id={stream.id} key={stream.id} onClick={() => setActive(stream)}>
           <div className="featured-thumb">
             <img className="featured-thumb-image" src={stream.thumbnail} alt="" aria-hidden="true" />
-            <StreamPreview stream={stream} onStatus={updateStatus} />
+            <StreamPreview stream={stream} onStatus={value => updateStatus(stream.id, value)} />
             <div className="featured-play">▶</div>
             <span className={`featured-badge status-${status}`}><span className="featured-status-dot" />{isHls(stream) ? 'LIVE' : 'PREVIEW'} · {label}</span>
           </div>

@@ -156,37 +156,23 @@ const S = `
 .upcta:hover{border-color:rgba(224,92,47,.35);background:rgba(224,92,47,.03);}
 .upctai{width:38px;height:38px;border-radius:50%;background:rgba(224,92,47,.1);border:1px solid rgba(224,92,47,.22);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
 .upctap{margin-left:auto;padding:4px 11px;background:#e05c2f;color:#fff;border-radius:5px;font-size:10px;font-weight:500;}
-.pv{border-radius:20px;overflow:hidden;position:relative;background:#050608;aspect-ratio:16/9;isolation:isolate;box-shadow:0 24px 70px rgba(0,0,0,.42)}
-.premium-player-v2{position:absolute;inset:0;overflow:hidden;background:#050608;border-radius:20px;color:#fff}
-.premium-player-v2 video{width:100%;height:100%;display:block;background:#050608;cursor:pointer}
-.premium-v2-vignette{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.68) 0%,rgba(0,0,0,.06) 25%,rgba(0,0,0,.02) 54%,rgba(0,0,0,.82) 100%),radial-gradient(circle at 50% 48%,transparent 35%,rgba(0,0,0,.2) 100%)}
-.premium-v2-ui{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;justify-content:space-between;padding:20px 22px 17px;transition:opacity .28s ease;pointer-events:none}
-.premium-v2-ui.is-hidden{opacity:0}
-.premium-v2-ui>*{pointer-events:auto}
-.premium-v2-top{display:flex;align-items:flex-start;justify-content:space-between}
-.premium-v2-brand{display:flex;align-items:center;gap:10px}
-.premium-v2-brand-mark{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.94);color:#0b0d11;display:flex;align-items:center;justify-content:center;font-size:11px;padding-left:2px;box-shadow:0 5px 20px rgba(0,0,0,.25)}
-.premium-v2-brand strong{display:block;font-family:'Syne',sans-serif;font-size:10px;letter-spacing:1.6px;font-weight:800}
-.premium-v2-brand small{display:block;margin-top:3px;color:rgba(255,255,255,.65);font-size:10px;max-width:360px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.premium-v2-live{display:flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(5,7,10,.42);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-size:9px;font-weight:700;letter-spacing:1px}
-.premium-v2-live i{width:6px;height:6px;border-radius:50%;background:#ef3340;box-shadow:0 0 0 4px rgba(239,51,64,.13)}
-.premium-v2-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-.premium-v2-play{width:72px;height:72px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.9);color:#0b0d11;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 42px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.8);font-size:25px;padding-left:4px;cursor:pointer;transition:transform .2s ease,background .2s ease}
-.premium-v2-play:hover{transform:scale(1.07);background:#fff}.premium-v2-play.paused{font-size:21px;padding-left:0}
-.premium-v2-bottom{width:100%;padding:0 2px}
-.premium-v2-seek-wrap{position:relative;height:15px;display:flex;align-items:center;margin-bottom:5px}
-.premium-v2-seek-track{position:absolute;left:0;right:0;height:3px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden;pointer-events:none}
-.premium-v2-seek-fill{height:100%;background:#fff;border-radius:99px}
-.premium-v2-range{position:absolute;inset:0;width:100%;height:15px;margin:0;opacity:0;cursor:pointer}
-.premium-v2-controls{height:32px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.premium-v2-left,.premium-v2-right{display:flex;align-items:center;gap:5px}
-.premium-v2-icon-btn{width:28px;height:28px;border:0;background:transparent;color:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;border-radius:7px;cursor:pointer;font-size:13px;padding:0}
-.premium-v2-icon-btn:hover{background:rgba(255,255,255,.1);color:#fff}
-.premium-v2-volume{width:64px;display:flex;align-items:center}.premium-v2-volume input{width:100%;height:3px;accent-color:#fff;cursor:pointer}
-.premium-v2-time{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.78);margin-left:5px;white-space:nowrap}.premium-v2-time b{color:rgba(255,255,255,.35);font-weight:400;margin:0 2px}
-.premium-v2-chip{height:26px;padding:0 9px;border:1px solid rgba(255,255,255,.14);border-radius:7px;background:rgba(6,8,11,.38);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:rgba(255,255,255,.82);font-size:9px;font-weight:700;letter-spacing:.4px;cursor:pointer}
-.premium-v2-chip:hover{background:rgba(255,255,255,.1);color:#fff}
-.premium-player-v2:fullscreen{border-radius:0;width:100vw;height:100vh}.premium-player-v2.is-fullscreen{border-radius:0}
+.pv{border-radius:20px;overflow:hidden;position:relative;background:#050608;aspect-ratio:16/9;isolation:isolate;box-shadow:0 22px 65px rgba(0,0,0,.38)}
+.vp-dribbble{position:absolute;inset:0;background:#050608;overflow:hidden;border-radius:20px;color:#fff}
+.vp-dribbble video{width:100%;height:100%;display:block;background:#050608;object-fit:contain;cursor:pointer}
+.vp-dribbble-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(4,6,9,.72),transparent 30%,transparent 55%,rgba(4,6,9,.92) 100%),radial-gradient(circle at center,transparent 35%,rgba(0,0,0,.2) 100%)}
+.vp-dribbble-ui{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;justify-content:space-between;padding:24px 28px 20px;transition:opacity .3s ease}
+.vp-dribbble-ui.vp-hidden{opacity:0;pointer-events:none}
+.vp-dribbble-top{display:flex;justify-content:space-between;align-items:flex-start}
+.vp-title{display:flex;align-items:center;gap:12px}.vp-title b{display:block;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:.2px}.vp-title small{display:block;margin-top:3px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.3px;color:rgba(255,255,255,.5)}
+.vp-playmark{width:31px;height:31px;border-radius:50%;background:rgba(255,255,255,.93);color:#080a0d;display:flex;align-items:center;justify-content:center;font-size:10px;padding-left:2px}
+.vp-close{width:34px;height:34px;border:1px solid rgba(255,255,255,.2);border-radius:50%;background:rgba(10,12,16,.25);backdrop-filter:blur(10px);color:#fff;font-size:20px;line-height:1;cursor:pointer}
+.vp-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.vp-main-play{width:82px;height:82px;border:1px solid rgba(255,255,255,.55);border-radius:50%;background:rgba(255,255,255,.94);color:#080a0d;display:flex;align-items:center;justify-content:center;font-size:25px;padding-left:5px;box-shadow:0 15px 45px rgba(0,0,0,.35);cursor:pointer;transition:transform .2s ease}.vp-main-play:hover{transform:scale(1.06)} 
+.vp-bottom{width:100%}.vp-timeline{display:flex;align-items:center;gap:12px;font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.68);margin-bottom:12px}.vp-track{position:relative;flex:1;height:12px;display:flex;align-items:center}.vp-track>div{position:absolute;left:0;height:3px;border-radius:5px;background:#fff;z-index:1}.vp-track:before{content:"";position:absolute;left:0;right:0;height:3px;border-radius:5px;background:rgba(255,255,255,.28)}.vp-track input{position:absolute;inset:0;width:100%;height:12px;margin:0;opacity:0;cursor:pointer;z-index:2}
+.vp-controls{height:35px;display:flex;align-items:center;justify-content:space-between}.vp-control-left,.vp-control-right{display:flex;align-items:center;gap:4px}.vp-controls button{height:30px;min-width:30px;padding:0 7px;border:0;border-radius:7px;background:transparent;color:rgba(255,255,255,.86);font-size:10px;cursor:pointer}.vp-controls button:hover{background:rgba(255,255,255,.1);color:#fff}.vp-volume{width:55px}.vp-volume input{width:100%;height:3px;accent-color:#fff}
+.vp-control-center{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.48)}.vp-control-center i{width:4px;height:4px;border-radius:50%;background:#ef3340;box-shadow:0 0 0 4px rgba(239,51,64,.1)}
+.vp-dribbble:fullscreen{border-radius:0}.vp-full{border-radius:0}
+@media(max-width:700px){.vp-dribbble-ui{padding:16px 15px 13px}.vp-main-play{width:62px;height:62px;font-size:19px}.vp-title b{font-size:11px}.vp-control-center{display:none}.vp-volume{display:none}.vp-timeline{gap:8px}.vp-close{width:30px;height:30px}}
 .pv-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:#9896a6;font-size:11px;text-align:center;padding:20px}
 @media(max-width:700px){.premium-player-ui{padding:12px}.premium-pill{font-size:11px;padding:5px 10px}.premium-play{width:54px;height:54px;font-size:20px}.premium-control{font-size:10px;padding:5px 8px}.premium-time{font-size:10px}}
 .ptitle{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:-.3px;margin:11px 0 6px;}
@@ -207,84 +193,51 @@ function defaultApiGuess() {
 }
 
 function PremiumVideoPlayer({ src, title }) {
-  const videoRef = useRef(null), idleRef = useRef(null), playerRef = useRef(null);
-  const [playing,setPlaying]=useState(false), [current,setCurrent]=useState(0), [duration,setDuration]=useState(0);
-  const [controlsVisible,setControlsVisible]=useState(true), [muted,setMuted]=useState(false), [volume,setVolume]=useState(1);
-  const [fit,setFit]=useState("contain"), [fullscreen,setFullscreen]=useState(false);
-
-  const showControls=useCallback(()=>{setControlsVisible(true);clearTimeout(idleRef.current);idleRef.current=setTimeout(()=>setControlsVisible(false),3000);},[]);
-  useEffect(()=>{showControls();return()=>clearTimeout(idleRef.current);},[showControls,src]);
-
-  useEffect(()=>{
-    const v=videoRef.current;if(!v)return;
-    const t=()=>setCurrent(v.currentTime||0),d=()=>setDuration(Number.isFinite(v.duration)?v.duration:0);
-    const p=()=>setPlaying(true),q=()=>setPlaying(false),m=()=>setMuted(v.muted);
-    v.addEventListener("timeupdate",t);v.addEventListener("loadedmetadata",d);v.addEventListener("durationchange",d);
-    v.addEventListener("play",p);v.addEventListener("pause",q);v.addEventListener("volumechange",m);
-    return()=>{v.removeEventListener("timeupdate",t);v.removeEventListener("loadedmetadata",d);v.removeEventListener("durationchange",d);v.removeEventListener("play",p);v.removeEventListener("pause",q);v.removeEventListener("volumechange",m);};
-  },[src]);
-
-  useEffect(()=>{
-    const onKey=e=>{
-      if(e.target instanceof HTMLInputElement) return;
-      if(e.code==="Space"){e.preventDefault();togglePlay();}
-      if(e.code==="ArrowLeft") seekTo(Math.max(0,current-5));
-      if(e.code==="ArrowRight") seekTo(Math.min(duration,current+5));
-      if(e.key.toLowerCase()==="f") toggleFullscreen();
-      showControls();
-    };
-    window.addEventListener("keydown",onKey);
-    return()=>window.removeEventListener("keydown",onKey);
-  });
-
-  const togglePlay=()=>{const v=videoRef.current;if(!v)return;if(v.paused)v.play().catch(()=>{});else v.pause();showControls();};
-  const seekTo=value=>{const v=videoRef.current;if(!v)return;v.currentTime=Math.max(0,Math.min(value,duration||0));setCurrent(v.currentTime);showControls();};
-  const seek=e=>seekTo(Number(e.target.value));
-  const changeVolume=e=>{const value=Number(e.target.value);const v=videoRef.current;if(!v)return;v.volume=value;v.muted=value===0;setVolume(value);setMuted(value===0);showControls();};
-  const toggleMute=()=>{const v=videoRef.current;if(!v)return;v.muted=!v.muted;setMuted(v.muted);if(!v.muted&&v.volume===0){v.volume=.7;setVolume(.7);}showControls();};
-  const toggleFullscreen=async()=>{if(!playerRef.current)return;try{if(!document.fullscreenElement){await playerRef.current.requestFullscreen();setFullscreen(true);}else{await document.exitFullscreen();setFullscreen(false);}}catch{}showControls();};
-  const formatTime=value=>{if(!Number.isFinite(value)||value<0)return"00:00";const total=Math.floor(value),hours=Math.floor(total/3600),minutes=Math.floor((total%3600)/60),seconds=total%60;return hours>0?hours+":"+String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0"):String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0");};
-  const progress=duration?Math.min(100,(current/duration)*100):0;
-
-  return <div ref={playerRef} className={`premium-player-v2${fullscreen?" is-fullscreen":""}`} onMouseMove={showControls} onMouseEnter={showControls} onDoubleClick={toggleFullscreen}>
-    <video ref={videoRef} src={src} playsInline preload="metadata" style={{objectFit:fit}} aria-label={title||"Videoplex video"} onClick={togglePlay}/>
-    <div className="premium-v2-vignette"/>
-    <div className={`premium-v2-ui${controlsVisible?"":" is-hidden"}`}>
-      <div className="premium-v2-top">
-        <div className="premium-v2-brand"><span className="premium-v2-brand-mark">▶</span><div><strong>VIDEOPLEX</strong><small>{title||"Now Playing"}</small></div></div>
-        <div className="premium-v2-live"><i/> LIVE</div>
+  const videoRef=useRef(null), idleRef=useRef(null), playerRef=useRef(null);
+  const [playing,setPlaying]=useState(false),[current,setCurrent]=useState(0),[duration,setDuration]=useState(0),[visible,setVisible]=useState(true);
+  const [muted,setMuted]=useState(false),[volume,setVolume]=useState(.8),[fullscreen,setFullscreen]=useState(false);
+  const show=useCallback(()=>{setVisible(true);clearTimeout(idleRef.current);idleRef.current=setTimeout(()=>setVisible(false),3200)},[]);
+  useEffect(()=>{show();return()=>clearTimeout(idleRef.current)},[show,src]);
+  useEffect(()=>{const v=videoRef.current;if(!v)return;const t=()=>setCurrent(v.currentTime||0),d=()=>setDuration(Number.isFinite(v.duration)?v.duration:0),p=()=>setPlaying(true),q=()=>setPlaying(false);v.addEventListener("timeupdate",t);v.addEventListener("loadedmetadata",d);v.addEventListener("durationchange",d);v.addEventListener("play",p);v.addEventListener("pause",q);return()=>{v.removeEventListener("timeupdate",t);v.removeEventListener("loadedmetadata",d);v.removeEventListener("durationchange",d);v.removeEventListener("play",p);v.removeEventListener("pause",q)}},[src]);
+  const toggle=()=>{const v=videoRef.current;if(!v)return;v.paused?v.play().catch(()=>{}):v.pause();show()};
+  const seek=e=>{const v=videoRef.current;if(!v)return;v.currentTime=Number(e.target.value);setCurrent(v.currentTime);show()};
+  const mute=()=>{const v=videoRef.current;if(!v)return;v.muted=!v.muted;setMuted(v.muted);show()};
+  const changeVolume=e=>{const n=Number(e.target.value),v=videoRef.current;if(!v)return;v.volume=n;v.muted=n===0;setVolume(n);setMuted(n===0);show()};
+  const full=async()=>{try{if(!document.fullscreenElement){await playerRef.current.requestFullscreen();setFullscreen(true)}else{await document.exitFullscreen();setFullscreen(false)}}catch{}show()};
+  const fmt=n=>{n=Math.max(0,Math.floor(Number(n)||0));return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")};
+  const progress=duration?(current/duration)*100:0;
+  return <div ref={playerRef} className={`vp-dribbble${fullscreen?" vp-full":""}`} onMouseMove={show} onMouseEnter={show}>
+    <video ref={videoRef} src={src} playsInline preload="metadata" aria-label={title||"Videoplex video"} onClick={toggle}/>
+    <div className="vp-dribbble-shade"/>
+    <div className={`vp-dribbble-ui${visible?"":" vp-hidden"}`}>
+      <div className="vp-dribbble-top">
+        <div className="vp-title"><span className="vp-playmark">▶</span><div><b>{title||"Videoplex"}</b><small>NOW PLAYING</small></div></div>
+        <button type="button" className="vp-close" aria-label="Close player">×</button>
       </div>
-
-      <div className="premium-v2-center">
-        <button type="button" className={`premium-v2-play${playing?" paused":""}`} onClick={togglePlay} aria-label={playing?"Pause":"Play"}>
-          {playing ? <span className="pause-icon">Ⅱ</span> : <span className="play-icon">▶</span>}
-        </button>
+      <div className="vp-center">
+        <button type="button" className="vp-main-play" onClick={toggle} aria-label={playing?"Pause":"Play"}>{playing?"Ⅱ":"▶"}</button>
       </div>
-
-      <div className="premium-v2-bottom">
-        <div className="premium-v2-seek-wrap">
-          <div className="premium-v2-seek-track"><div className="premium-v2-seek-fill" style={{width:progress+"%"}}/></div>
-          <input className="premium-v2-range" type="range" min="0" max={duration||0} step=".1" value={Math.min(current,duration||0)} onChange={seek} aria-label="Video progress"/>
+      <div className="vp-bottom">
+        <div className="vp-timeline">
+          <span>{fmt(current)}</span>
+          <div className="vp-track"><div style={{width:progress+"%"}}/><input type="range" min="0" max={duration||0} step=".1" value={Math.min(current,duration||0)} onChange={seek} aria-label="Video progress"/></div>
+          <span>-{fmt(Math.max(0,duration-current))}</span>
         </div>
-        <div className="premium-v2-controls">
-          <div className="premium-v2-left">
-            <button type="button" className="premium-v2-icon-btn" onClick={togglePlay} aria-label={playing?"Pause":"Play"}>{playing?"Ⅱ":"▶"}</button>
-            <button type="button" className="premium-v2-icon-btn" onClick={toggleMute} aria-label={muted?"Unmute":"Mute"}>{muted?"⌁":"◖"}</button>
-            <div className="premium-v2-volume"><input type="range" min="0" max="1" step=".05" value={muted?0:volume} onChange={changeVolume} aria-label="Volume"/></div>
-            <span className="premium-v2-time">{formatTime(current)} <b>/</b> {formatTime(duration)}</span>
+        <div className="vp-controls">
+          <div className="vp-control-left">
+            <button onClick={toggle} aria-label={playing?"Pause":"Play"}>{playing?"Ⅱ":"▶"}</button>
+            <button onClick={mute} aria-label={muted?"Unmute":"Mute"}>{muted?"⌁":"◖"}</button>
+            <div className="vp-volume"><input type="range" min="0" max="1" step=".05" value={muted?0:volume} onChange={changeVolume} aria-label="Volume"/></div>
           </div>
-          <div className="premium-v2-right">
-            <button type="button" className="premium-v2-chip" onClick={()=>setFit(v=>v==="contain"?"cover":"contain")}>{fit==="contain"?"FIT":"FILL"}</button>
-            <button type="button" className="premium-v2-chip">CC</button>
-            <button type="button" className="premium-v2-chip">1080P</button>
-            <button type="button" className="premium-v2-icon-btn" onClick={toggleFullscreen} aria-label="Fullscreen">{fullscreen?"×":"⛶"}</button>
+          <div className="vp-control-center"><span>VIDEOPLEX</span><i/></div>
+          <div className="vp-control-right">
+            <button>CC</button><button>HD</button><button onClick={full} aria-label="Fullscreen">{fullscreen?"×":"⛶"}</button>
           </div>
         </div>
       </div>
     </div>
   </div>;
 }
-
 export default function App() {
   // ── Connection & auth state ──────────────────────────────────────────
   const [apiUrl, setApiUrl] = useState("");

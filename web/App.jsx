@@ -156,27 +156,9 @@ const S = `
 .upcta:hover{border-color:rgba(224,92,47,.35);background:rgba(224,92,47,.03);}
 .upctai{width:38px;height:38px;border-radius:50%;background:rgba(224,92,47,.1);border:1px solid rgba(224,92,47,.22);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
 .upctap{margin-left:auto;padding:4px 11px;background:#e05c2f;color:#fff;border-radius:5px;font-size:10px;font-weight:500;}
-.pv{border-radius:20px;overflow:hidden;position:relative;background:#050608;aspect-ratio:16/9;isolation:isolate;box-shadow:0 24px 70px rgba(0,0,0,.4)}
-.vp-cinematic{position:absolute;inset:0;overflow:hidden;border-radius:20px;background:#050608;color:#fff}
-.vp-cinematic video{width:100%;height:100%;display:block;background:#050608;cursor:pointer}
-.vp-cinematic-overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(5,7,10,.64) 0%,rgba(5,7,10,.05) 28%,rgba(5,7,10,.04) 55%,rgba(5,7,10,.78) 100%),radial-gradient(circle at center,transparent 32%,rgba(0,0,0,.18) 100%)}
-.vp-cinematic-ui{position:absolute;inset:0;z-index:5;padding:20px 22px 18px;transition:opacity .3s ease;pointer-events:none}
-.vp-cinematic-ui>*{pointer-events:auto}.vp-ui-hidden{opacity:0;pointer-events:none}
-.vp-cinematic-top{display:flex;justify-content:space-between;align-items:flex-start}.vp-badges,.vp-top-actions{display:flex;align-items:center;gap:8px}
-.vp-glass-pill{padding:8px 14px;border:1px solid rgba(255,255,255,.2);border-radius:12px;background:rgba(255,255,255,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:12px;font-weight:600;color:rgba(255,255,255,.95);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-.vp-glass-circle{width:36px;height:36px;border:1px solid rgba(255,255,255,.16);border-radius:50%;background:rgba(0,0,0,.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.vp-glass-circle:hover,.vp-settings-pill:hover{background:rgba(255,255,255,.18)}
-.vp-cinematic-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-.vp-cinematic-play{width:72px;height:72px;border:0;border-radius:50%;background:#fff;color:#08090c;display:flex;align-items:center;justify-content:center;font-size:24px;padding-left:4px;box-shadow:0 12px 38px rgba(0,0,0,.4);cursor:pointer;transition:transform .2s ease}.vp-cinematic-play:hover{transform:scale(1.06)}.vp-cinematic-play.vp-playing{font-size:21px;padding-left:0}
-.vp-lock{position:absolute;left:22px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:rgba(255,255,255,.9);font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;text-shadow:0 2px 8px rgba(0,0,0,.5)}.vp-lock span{font-size:14px}
-.vp-cinematic-bottom{position:absolute;left:22px;right:22px;bottom:18px}.vp-settings-pill{position:absolute;right:0;bottom:48px;display:flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.vp-settings-pill button{border:0;background:none;color:#fff;font-size:11px;padding:2px;cursor:pointer}.vp-settings-pill b{font-weight:400;color:rgba(255,255,255,.35)}
-.vp-progress-pill{height:38px;display:flex;align-items:center;gap:12px;padding:0 13px;border:1px solid rgba(255,255,255,.13);border-radius:12px;background:rgba(255,255,255,.11);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.2);font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.85)}
-.vp-progress-track{position:relative;flex:1;height:4px;border-radius:99px;background:rgba(255,255,255,.25)}.vp-progress-red{position:absolute;left:0;top:0;height:4px;border-radius:99px;background:#cc0000}.vp-progress-track input{position:absolute;inset:-7px 0;width:100%;height:18px;margin:0;opacity:0;cursor:pointer}
-.vp-cinematic-full{border-radius:0}.vp-cinematic-full .vp-cinematic-bottom{bottom:24px}
-@media(max-width:700px){.vp-cinematic-ui{padding:14px 14px 13px}.vp-glass-pill{padding:7px 10px;font-size:10px}.vp-glass-circle{width:32px;height:32px}.vp-cinematic-play{width:60px;height:60px;font-size:19px}.vp-lock{left:14px;font-size:11px}.vp-cinematic-bottom{left:14px;right:14px;bottom:13px}.vp-settings-pill{bottom:44px}.vp-settings-pill button{font-size:9px}.vp-progress-pill{height:34px;padding:0 9px;gap:7px;font-size:8px}}
-.pv-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:#9896a6;font-size:11px;text-align:center;padding:20px}
-@media(max-width:700px){.premium-player-ui{padding:12px}.premium-pill{font-size:11px;padding:5px 10px}.premium-play{width:54px;height:54px;font-size:20px}.premium-control{font-size:10px;padding:5px 8px}.premium-time{font-size:10px}}
+.pv{border-radius:10px;overflow:hidden;position:relative;background:#000;aspect-ratio:16/9;}
+.pv video{width:100%;height:100%;object-fit:contain;background:#000;}
+.pv-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:#9896a6;font-size:11px;text-align:center;padding:20px;}
 .ptitle{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:-.3px;margin:11px 0 6px;}
 .pmeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px;}
 .pch{display:flex;align-items:center;gap:7px;flex:1;}
@@ -194,38 +176,6 @@ function defaultApiGuess() {
   return "";
 }
 
-function PremiumVideoPlayer({ src, title }) {
-  const videoRef=useRef(null), idleRef=useRef(null);
-  const [playing,setPlaying]=useState(false),[current,setCurrent]=useState(0),[duration,setDuration]=useState(0),[visible,setVisible]=useState(true);
-  const [locked,setLocked]=useState(false),[fit,setFit]=useState("contain"),[fullscreen,setFullscreen]=useState(false);
-  const showControls=useCallback(()=>{if(locked)return;setVisible(true);clearTimeout(idleRef.current);idleRef.current=setTimeout(()=>setVisible(false),3000)},[locked]);
-  useEffect(()=>{showControls();return()=>clearTimeout(idleRef.current)},[showControls,src]);
-  useEffect(()=>{const v=videoRef.current;if(!v)return;const t=()=>setCurrent(v.currentTime||0),d=()=>setDuration(Number.isFinite(v.duration)?v.duration:0),p=()=>setPlaying(true),q=()=>setPlaying(false);v.addEventListener("timeupdate",t);v.addEventListener("loadedmetadata",d);v.addEventListener("durationchange",d);v.addEventListener("play",p);v.addEventListener("pause",q);return()=>{v.removeEventListener("timeupdate",t);v.removeEventListener("loadedmetadata",d);v.removeEventListener("durationchange",d);v.removeEventListener("play",p);v.removeEventListener("pause",q)}},[src]);
-  const togglePlay=()=>{const v=videoRef.current;if(!v)return;v.paused?v.play().catch(()=>{}):v.pause();showControls()};
-  const seek=e=>{const v=videoRef.current;if(!v)return;v.currentTime=Number(e.target.value);setCurrent(v.currentTime);showControls()};
-  const toggleFit=()=>{setFit(v=>v==="contain"?"cover":"contain");showControls()};
-  const toggleFullscreen=async()=>{try{if(!document.fullscreenElement){await videoRef.current?.parentElement.requestFullscreen();setFullscreen(true)}else{await document.exitFullscreen();setFullscreen(false)}}catch{}showControls()};
-  const fmt=n=>{n=Math.max(0,Math.floor(Number(n)||0));return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")};
-  const progress=duration?(current/duration)*100:0;
-  return <div className={`vp-cinematic${fullscreen?" vp-cinematic-full":""}`} onMouseMove={showControls} onMouseEnter={showControls}>
-    <video ref={videoRef} src={src} playsInline preload="metadata" style={{objectFit:fit}} aria-label={title||"Videoplex video"} onClick={togglePlay}/>
-    <div className="vp-cinematic-overlay"/>
-    <div className={`vp-cinematic-ui${visible?"":" vp-ui-hidden"}`}>
-      <div className="vp-cinematic-top">
-        <div className="vp-badges"><span className="vp-glass-pill">{title||"House of the Dragon"}</span><span className="vp-glass-pill">S4 E1</span></div>
-        <div className="vp-top-actions"><button type="button" className="vp-glass-circle" aria-label="Information">i</button><button type="button" className="vp-glass-circle" aria-label="Settings">⚙</button></div>
-      </div>
-      <div className="vp-cinematic-center"><button type="button" className={`vp-cinematic-play${playing?" vp-playing":""}`} onClick={togglePlay} aria-label={playing?"Pause":"Play"}>{playing?"Ⅱ":"▶"}</button></div>
-      <button type="button" className="vp-lock" onClick={()=>setLocked(v=>!v)} aria-label={locked?"Unlock controls":"Lock controls"}><span>♙</span> {locked?"Tap to Unlock":"Tap to Lock"}</button>
-      <div className="vp-cinematic-bottom">
-        <div className="vp-settings-pill"><button type="button" onClick={toggleFit}>{fit==="contain"?"Fit":"Fill"}</button><b>|</b><button type="button">Language</button><b>|</b><button type="button">1080P</button></div>
-        <div className="vp-progress-pill">
-          <span>{fmt(current)}</span><div className="vp-progress-track"><div className="vp-progress-red" style={{width:progress+"%"}}/><input type="range" min="0" max={duration||0} step=".1" value={Math.min(current,duration||0)} onChange={seek} aria-label="Video progress"/></div><span>{fmt(duration)}</span>
-        </div>
-      </div>
-    </div>
-  </div>;
-}
 export default function App() {
   // ── Connection & auth state ──────────────────────────────────────────
   const [apiUrl, setApiUrl] = useState("");
@@ -691,9 +641,9 @@ export default function App() {
               <div className="pv">
                 {activeVideo.status === "READY" && (activeVideo.streamUrl || activeVideo.muxPlaybackId) ? (
                   activeVideo.streamUrl ? (
-  <PremiumVideoPlayer src={activeVideo.streamUrl} title={activeVideo.title} />
+  <video controls src={activeVideo.streamUrl} />
 ) : canPlayHls ? (
-  <PremiumVideoPlayer src={`https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`} title={activeVideo.title} />
+  <video controls src={`https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`} />
 ) : (
                     <div className="pv-fallback">
                       <div style={{ fontSize: 24 }}>▶</div>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Hls from 'hls.js';
+import VideoPlexPlayer from './components/player/VideoPlexPlayer.jsx';
 
 const API_DEFAULT = 'http://localhost:4000';
 const HEALTH_REFRESH_MS = 30 * 60 * 1000;
@@ -12,7 +12,40 @@ function countryFlagCode(country=''){const name=String(country).trim();if(/^[A-Z
 function countryFlagUrl(country=''){const code=countryFlagCode(country);return code?`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/flags/4x3/${code}.svg`:'';}
 function CountryFlagImage({country,className=''}){const[url,setUrl]=useState(()=>countryFlagUrl(country));useEffect(()=>setUrl(countryFlagUrl(country)),[country]);if(!url)return <span className={`iptv-country-flag-fallback ${className}`}>{countryFlag(country)}</span>;return <img className={`iptv-country-flag-img ${className}`} src={url} alt={`${country} flag`} loading="lazy" referrerPolicy="no-referrer" onError={()=>setUrl('')}/>;}
 
-function LivePlayer({channel,onClose}){const videoRef=useRef(null),hlsRef=useRef(null),retryRef=useRef(null);const[state,setState]=useState('loading');const[attempt,setAttempt]=useState(0);useEffect(()=>{const video=videoRef.current;if(!video||!channel?.streamUrl)return;let cancelled=false;setState('loading');const target=channel.streamUrl;const source=channel.type==='hls'?`${apiBase()}/api/iptv/proxy?url=${encodeURIComponent(target)}`:target;const cleanup=()=>{if(retryRef.current)clearTimeout(retryRef.current);if(hlsRef.current){hlsRef.current.destroy();hlsRef.current=null;}video.pause();video.removeAttribute('src');video.load();};if(channel.type!=='hls'){setState('unsupported');return cleanup;}if(video.canPlayType('application/vnd.apple.mpegurl')){video.src=source;const ok=()=>{if(!cancelled){setState('ready');video.play().catch(()=>{});}};const fail=()=>{if(!cancelled)setState('error');};video.addEventListener('loadedmetadata',ok);video.addEventListener('error',fail);return()=>{cancelled=true;video.removeEventListener('loadedmetadata',ok);video.removeEventListener('error',fail);cleanup();};}if(Hls.isSupported()){const hls=new Hls({enableWorker:true,lowLatencyMode:false,backBufferLength:30,maxBufferLength:30,maxMaxBufferLength:60,manifestLoadingMaxRetry:5,manifestLoadingRetryDelay:1000,levelLoadingMaxRetry:5,levelLoadingRetryDelay:1000,fragLoadingMaxRetry:5,fragLoadingRetryDelay:1000,fragLoadingTimeOut:20000,manifestLoadingTimeOut:20000,levelLoadingTimeOut:20000});hlsRef.current=hls;hls.loadSource(source);hls.attachMedia(video);hls.on(Hls.Events.MANIFEST_PARSED,()=>{if(!cancelled){setState('ready');video.play().catch(()=>{});}});hls.on(Hls.Events.ERROR,(_,data)=>{if(cancelled||!data.fatal)return;if(data.type===Hls.ErrorTypes.NETWORK_ERROR){setState('loading');try{hls.startLoad(-1);}catch(_){}retryRef.current=setTimeout(()=>{if(!cancelled&&video.readyState<2)setState('error');},15000);}else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){try{hls.recoverMediaError();}catch(_){setState('error');}}else setState('error');});return()=>{cancelled=true;cleanup();};}setState('unsupported');return cleanup;},[channel,attempt]);return <div className="iptv-modal" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="iptv-player-card"><div className="iptv-player-head"><div><div className="iptv-live-pill"><span/> LIVE TV</div><div className="iptv-player-title">{channel.name}</div></div><button className="btn bg" onClick={onClose}>Close</button></div><div className="iptv-player-stage"><video ref={videoRef} controls playsInline preload="auto"/><div className="iptv-player-state" style={{display:state==='ready'?'none':'flex'}}>{state==='loading'&&<><div className="spinner"/><div>Connecting to live stream…</div><small>Using Videoplex's HLS playback layer</small></>}{state==='error'&&<><div style={{fontSize:24}}>⚠</div><div>Stream unavailable right now</div><small>The provider may be offline, require a provider-specific referrer, or have stopped publishing.</small><button className="btn bg" onClick={()=>setAttempt(x=>x+1)}>Try again</button></>}{state==='unsupported'&&<><div style={{fontSize:24}}>▶</div><div>This channel isn't a browser-playable HLS stream.</div></>}</div></div><div className="iptv-player-meta"><div className="iptv-logo-small">{channel.logo?<img src={channel.logo} alt=""/>:initials(channel.name)}</div><div><div className="iptv-player-name">{countryFlag(channel.country)} {channel.name}</div><div className="iptv-player-sub">{channel.country||'International'}{channel.category?` · ${channel.category}`:''}</div></div></div></div></div>}
+function LivePlayer({channel,onClose}) {
+  const source = channel.type === 'hls'
+    ? `${apiBase()}/api/iptv/proxy?url=${encodeURIComponent(channel.streamUrl)}`
+    : channel.streamUrl;
+
+  return (
+    <div className="iptv-modal" onClick={event => event.target === event.currentTarget && onClose()}>
+      <div className="iptv-player-card">
+        <div className="iptv-player-head">
+          <div>
+            <div className="iptv-live-pill"><span/> LIVE TV</div>
+            <div className="iptv-player-title">{channel.name}</div>
+          </div>
+          <button type="button" className="btn bg" onClick={onClose}>Close</button>
+        </div>
+        <VideoPlexPlayer
+          src={source}
+          type={channel.type || 'hls'}
+          title={channel.name}
+          isLive
+        />
+        <div className="iptv-player-meta">
+          <div className="iptv-logo-small">
+            {channel.logo ? <img src={channel.logo} alt="" /> : initials(channel.name)}
+          </div>
+          <div>
+            <div className="iptv-player-name">{countryFlag(channel.country)} {channel.name}</div>
+            <div className="iptv-player-sub">{channel.country || 'International'}{channel.category ? ` · ${channel.category}` : ''}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function LiveTV({apiUrl}){const base=useMemo(()=>(apiUrl||apiBase()).replace(/\/$/,''),[apiUrl]);const[channels,setChannels]=useState([]),[countries,setCountries]=useState([]),[categories,setCategories]=useState([]),[q,setQ]=useState(''),[country,setCountry]=useState(''),[category,setCategory]=useState(''),[countryOpen,setCountryOpen]=useState(false),[offset,setOffset]=useState(0),[hasMore,setHasMore]=useState(true),[loading,setLoading]=useState(true),[error,setError]=useState(''),[active,setActive]=useState(null),[health,setHealth]=useState({}),[checking,setChecking]=useState({});const countryRef=useRef(null);
   const checkChannels=useCallback(async(list=channels)=>{if(!list.length)return;const visible=list.slice(-30);setChecking(v=>{const n={...v};visible.forEach(c=>{n[c.id]=true;});return n;});await Promise.all(visible.map(async c=>{try{const r=await fetch(`${base}/api/iptv/health?url=${encodeURIComponent(c.streamUrl)}&type=${encodeURIComponent(c.type)}`);const d=await r.json();setHealth(v=>({...v,[c.id]:Boolean(d.active)}));}catch{setHealth(v=>({...v,[c.id]:false}));}finally{setChecking(v=>({...v,[c.id]:false}));}}));},[base,channels]);

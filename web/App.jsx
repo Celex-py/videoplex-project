@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import VideoPlexPlayer from "./components/player/VideoPlexPlayer.jsx";
 
 const S = `
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=DM+Mono&display=swap');
@@ -640,18 +641,13 @@ export default function App() {
             <div className="pg">
               <div className="pv">
                 {activeVideo.status === "READY" && (activeVideo.streamUrl || activeVideo.muxPlaybackId) ? (
-                  activeVideo.streamUrl ? (
-  <video controls src={activeVideo.streamUrl} />
-) : canPlayHls ? (
-  <video controls src={`https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`} />
-) : (
-                    <div className="pv-fallback">
-                      <div style={{ fontSize: 24 }}>▶</div>
-                      <div>This browser can't play HLS inline.</div>
-                      <a href={`https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`} target="_blank" rel="noreferrer"
-                        style={{ color: "#ff7a50", fontSize: 11 }}>Open stream in new tab ↗</a>
-                    </div>
-                  )
+                  <VideoPlexPlayer
+                    src={activeVideo.streamUrl || `https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`}
+                    type={activeVideo.streamUrl
+                      ? (/\.m3u8(?:$|\?)/i.test(activeVideo.streamUrl) ? "hls" : /\.webm(?:$|\?)/i.test(activeVideo.streamUrl) ? "webm" : "mp4")
+                      : "hls"}
+                    title={activeVideo.title}
+                  />
                 ) : (
                   <div className="pv-fallback">
                     {activeVideo.status === "FAILED"

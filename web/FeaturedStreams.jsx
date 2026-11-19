@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Hls from 'hls.js';
+import VideoPlexPlayer from './components/player/VideoPlexPlayer.jsx';
 import './FeaturedStreams.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
@@ -60,32 +61,32 @@ function StreamPreview({ stream, onStatus }) {
 }
 
 function Player({ stream, onClose }) {
-  const [status, setStatus] = useState('loading');
-  const videoRef = useRef(null);
-  const hlsRef = useRef(null);
-  useEffect(() => {
-    const video = videoRef.current; if (!video) return undefined;
-    const sources = [stream.url, ...(stream.alternatives || [])]; let sourceIndex = 0; let destroyed = false;
-    const cleanup = () => { if (hlsRef.current) { hlsRef.current.destroy(); hlsRef.current = null; } video.pause(); video.removeAttribute('src'); video.load(); };
-    const trySource = () => {
-      if (destroyed) return; const source = sources[sourceIndex]; if (!source) { setStatus('error'); return; } setStatus('loading');
-      if (hlsRef.current) { hlsRef.current.destroy(); hlsRef.current = null; }
-      if (isHls(stream)) {
-        const proxied = mediaUrl(stream, source);
-        if (video.canPlayType('application/vnd.apple.mpegurl')) video.src = proxied;
-        else if (Hls.isSupported()) {
-          const hls = new Hls({ enableWorker: true, lowLatencyMode: false, maxBufferLength: 30, backBufferLength: 30, manifestLoadingMaxRetry: 3, levelLoadingMaxRetry: 3, fragLoadingMaxRetry: 4 });
-          hlsRef.current = hls; hls.loadSource(proxied); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-          hls.on(Hls.Events.ERROR, (_event, data) => { if (data.fatal) { sourceIndex += 1; trySource(); } });
-        } else setStatus('error');
-      } else video.src = source;
-    };
-    const ready = () => { setStatus('ready'); video.play().catch(() => {}); };
-    const playing = () => setStatus('ready'); const error = () => { sourceIndex += 1; trySource(); };
-    video.addEventListener('loadedmetadata', ready); video.addEventListener('playing', playing); video.addEventListener('error', error); trySource();
-    return () => { destroyed = true; video.removeEventListener('loadedmetadata', ready); video.removeEventListener('playing', playing); video.removeEventListener('error', error); cleanup(); };
-  }, [stream]);
-  return <div className="featured-modal" onClick={e => e.target === e.currentTarget && onClose()}><div className="featured-player-card"><div className="featured-player-head"><div><span className={`featured-live-dot ${status === 'ready' ? 'is-active' : ''}`} /> {isHls(stream) ? 'LIVE' : 'PREVIEW'}<h3>{stream.name}</h3></div><button onClick={onClose}>Close</button></div><div className="featured-stage"><video ref={videoRef} controls playsInline preload="auto" />{status === 'loading' && <div className="featured-state">Connecting to video…</div>}{status === 'error' && <div className="featured-state">This video is unavailable right now.</div>}</div></div></div>;
+  const alternatives = (stream.alternatives || []).map(url => ({
+    url: mediaUrl(stream, url),
+    type: stream.type,
+  }));
+
+  return (
+    <div className="featured-modal" onClick={event => event.target === event.currentTarget && onClose()}>
+      <div className="featured-player-card">
+        <div className="featured-player-head">
+          <div>
+            <span className={`featured-live-dot ${isHls(stream) ? 'is-active' : ''}`} />
+            {isHls(stream) ? 'LIVE' : 'PREVIEW'}
+            <h3>{stream.name}</h3>
+          </div>
+          <button type="button" onClick={onClose}>Close</button>
+        </div>
+        <VideoPlexPlayer
+          src={mediaUrl(stream, stream.url)}
+          type={stream.type}
+          sources={alternatives}
+          title={stream.name}
+          isLive={isHls(stream)}
+        />
+      </div>
+    </div>
+  );
 }
 
 export default function FeaturedStreams() {

@@ -250,13 +250,13 @@ export default function App() {
 
   // ── Fetch wrapper ────────────────────────────────────────────────────
   const req = useCallback(async (method, path, body) => {
-    if (!apiUrl) throw new Error("No backend connected");
+    if (!apiUrl && !import.meta.env.DEV) throw new Error("No backend connected");
     const headers = {};
     if (token) headers["Authorization"] = `Bearer ${token}`;
     if (body) headers["Content-Type"] = "application/json";
     let res;
     try {
-      res = await fetch(`${apiUrl}${path}`, {
+      res = await fetch(`${apiUrl || ""}${path}`, {
         method, headers, body: body ? JSON.stringify(body) : undefined,
       });
     } catch (e) {
@@ -272,12 +272,14 @@ export default function App() {
     setConnState("connecting");
     setConnError("");
     try {
-      const res = await fetch(`${url}/api/health`);
+      const res = await fetch(`${url || ""}/api/health`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (data.status !== "ok") throw new Error("Unexpected response from /api/health");
-      setApiUrl(url);
-      localStorage.setItem("videoplex:apiUrl", url);
+      const normalizedUrl = String(url || "").replace(/\/$/, "");
+      setApiUrl(normalizedUrl);
+      if (normalizedUrl) localStorage.setItem("videoplex:apiUrl", normalizedUrl);
+      else localStorage.removeItem("videoplex:apiUrl");
       setConnState("ok");
       notify("Connected to backend");
     } catch (e) {

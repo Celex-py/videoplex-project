@@ -232,9 +232,24 @@ export default function App() {
       try {
         const savedUrl = await window.storage.get("videoplex:apiUrl", false);
         if (savedUrl?.value) {
-          setApiUrl(savedUrl.value);
-          setApiUrlDraft(savedUrl.value);
+          const saved = String(savedUrl.value).replace(/\/$/, "");
+          const remoteBrowser = typeof window !== "undefined" &&
+            !["localhost", "127.0.0.1"].includes(window.location.hostname);
+          const pointsToLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(saved);
+          // A localhost URL saved on the developer's machine cannot be reached
+          // from a Codespaces browser. Use the same-origin Vite API proxy instead.
+          if (remoteBrowser && pointsToLocalhost) {
+            setApiUrl("");
+            setApiUrlDraft("");
+            setConnState("unset");
+            try { await window.storage.delete("videoplex:apiUrl", false); } catch {}
+          } else {
+            setApiUrl(saved);
+            setApiUrlDraft(saved);
+          }
         } else {
+          setApiUrl("");
+          setApiUrlDraft("");
           setConnState("unset");
         }
       } catch {

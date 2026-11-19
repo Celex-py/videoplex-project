@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Hls from 'hls.js';
 import './VideoPlexPlayer.css';
 
+const EMPTY_SOURCES = [];
+
 function formatTime(value) {
   if (!Number.isFinite(value) || value < 0) return '0:00';
   const seconds = Math.floor(value);
@@ -16,7 +18,7 @@ function formatTime(value) {
 export default function VideoPlexPlayer({
   src,
   type = 'mp4',
-  sources = [],
+  sources = EMPTY_SOURCES,
   title = 'Now playing',
   isLive = false,
   autoPlay = true,

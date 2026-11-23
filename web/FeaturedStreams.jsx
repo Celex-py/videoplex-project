@@ -102,7 +102,7 @@ export default function FeaturedStreams() {
             <img className="featured-thumb-image" src={stream.thumbnail} alt="" aria-hidden="true" />
             <StreamPreview stream={stream} onStatus={value => updateStatus(stream.id, value)} />
             <div className="featured-play">▶</div>
-            <span className={`featured-badge status-${status}`}><span className="featured-status-dot" />{isHls(stream) ? 'LIVE' : 'PREVIEW'} · {label}</span>
+            {/* Status checks remain active internally; the card badge is intentionally hidden. */}
           </div>
           <div className="featured-info"><strong>{stream.name}</strong><span>{stream.meta}{stream.alternatives?.length ? ' · fallback available' : ''}</span></div>
         </button>;

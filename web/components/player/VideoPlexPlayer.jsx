@@ -251,7 +251,7 @@ export default function VideoPlexPlayer({
         <video ref={videoRef} className="vp-player-video" playsInline preload="auto" poster={poster} onClick={togglePlayback} />
         <div className="vp-player-vignette" />
         <div className="vp-player-topline">
-          <div className="vp-player-brand"><span className="vp-brand-mark">V</span><span>VIDEOPLEX</span></div>
+          <div className="vp-player-brand"><span className="vp-brand-mark">V</span><span>VIDEOPLEX</span><span className="vp-player-title-inline">{title}</span></div>
           <div className="vp-player-top-actions">
             {isLive && <span className="vp-player-live"><i /> LIVE</span>}
             <button type="button" className="vp-icon-button" onClick={toggleFullscreen} aria-label={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}><Icon name={fullscreen ? 'shrink' : 'fullscreen'} /></button>
@@ -262,9 +262,10 @@ export default function VideoPlexPlayer({
         {status === 'ready' && !playing && <button type="button" className="vp-center-play" onClick={togglePlayback} aria-label="Play"><Icon name="play" size={30} /></button>}
         <div className="vp-player-controls">
           <div className="vp-control-row">
-            <button type="button" className="vp-main-play" onClick={togglePlayback} aria-label={playing ? 'Pause' : 'Play'}><Icon name={playing ? 'pause' : 'play'} size={19} /></button>
-            {!isLive && <div className="vp-timeline"><span>{formatTime(currentTime)}</span><input aria-label="Seek" type="range" min="0" max={duration || 0} step="0.1" value={Math.min(currentTime, duration || 0)} onChange={event => seek(event.target.value)} disabled={!duration} style={{ '--vp-progress': `${duration ? (currentTime / duration) * 100 : 0}%` }} /><span>{formatTime(duration)}</span></div>}
+            <button type="button" className="vp-main-play" onClick={togglePlayback} aria-label={playing ? 'Pause' : 'Play'}><Icon name={playing ? 'pause' : 'play'} size={19} /></button>{!isLive && <button type="button" className="vp-icon-button vp-skip-button" onClick={() => skip(-10)} aria-label="Back 10 seconds"><Icon name="back" size={18} /><span>10</span></button>}
+            {!isLive && <div className="vp-timeline"><span>{formatTime(currentTime)}</span><span className="vp-time-divider">/</span><span>{formatTime(duration)}</span></div>}
             {isLive && <div className="vp-live-caption"><span className="vp-live-pulse" /> You're watching live</div>}
+            {!isLive && <button type="button" className="vp-icon-button vp-skip-button" onClick={() => skip(10)} aria-label="Forward 10 seconds"><Icon name="forward" size={18} /><span>10</span></button>}
             <div className="vp-control-spacer" />
             <div className="vp-volume-control">
               <button type="button" className="vp-icon-button" onClick={toggleMute} aria-label={muted || volume === 0 ? 'Unmute' : 'Mute'}><Icon name={muted || volume === 0 ? 'mute' : 'volume'} /></button>

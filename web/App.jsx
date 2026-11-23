@@ -420,7 +420,15 @@ export default function App() {
   };
 
   // ── Navigation guards ────────────────────────────────────────────────
-  const go = (p) => { setPage(p); setActiveVideo(null); };
+  const [activeSection, setActiveSection] = useState("home");
+  const go = (p) => { setPage(p); setActiveVideo(null); if (p === "home") setActiveSection("home"); };
+  const jumpToSection = (section, selector) => {
+    if (page !== "home") setPage("home");
+    setActiveSection(section);
+    window.setTimeout(() => {
+      document.querySelector(selector)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 90);
+  };
   const requireAuth = (p) => {
     if (connState !== "ok") { setModal("settings"); return; }
     if (!token) { setAuthMode("login"); setModal("auth"); return; }
@@ -577,12 +585,22 @@ export default function App() {
       <div className="body">
         <aside className="sb">
           <div className="sbs">
-            <div className={`sbi${page==="home"?" on":""}`} onClick={() => go("home")}><span>⌂</span> Home</div>
+            <div className="sbl">Discover</div>
+            <div className={`sbi${activeSection==="home"?" on":""}`} onClick={() => go("home")}><span>⌂</span> Home</div>
+            <div className={`sbi${activeSection==="movies"?" on":""}`} onClick={() => jumpToSection("movies",".mn .shdr")}><span>▣</span> Movies & Videos</div>
+            <div className={`sbi${activeSection==="spotlight"?" on":""}`} onClick={() => jumpToSection("spotlight",".featured-streams")}><span>☆</span> Spotlight Streams</div>
+            <div className={`sbi${activeSection==="live"?" on":""}`} onClick={() => jumpToSection("live",".iptv-section")}><span>◉</span> Live TV</div>
           </div>
           <div className="sbs">
             <div className="sbl">Your stuff</div>
             <div className={`sbi${page==="dashboard"?" on":""}`} onClick={() => requireAuth("dashboard")}><span>▦</span> Dashboard</div>
             <div className={`sbi sbi-up${page==="upload"?" on":""}`} onClick={() => { if (!token) { setAuthMode("login"); setModal("auth"); return; } requireChannel("upload"); }}><span>⬆</span> Upload video</div>
+          </div>
+          <div className="sb-promo">
+            <div className="sb-promo-icon">✦</div>
+            <strong>Your media, all in one place</strong>
+            <span>Discover videos and live channels from one hub.</span>
+            <button type="button" onClick={() => jumpToSection("live",".iptv-section")}>Explore Live TV <b>→</b></button>
           </div>
         </aside>
 
@@ -873,6 +891,12 @@ export default function App() {
           )}
         </main>
       </div>
+      <nav className="mobile-nav" aria-label="Primary navigation">
+        <button className={activeSection==="home"?"active":""} onClick={() => go("home")}><span>⌂</span>Home</button>
+        <button className={activeSection==="movies"?"active":""} onClick={() => jumpToSection("movies",".mn .shdr")}><span>▣</span>Movies</button>
+        <button className={activeSection==="spotlight"?"active":""} onClick={() => jumpToSection("spotlight",".featured-streams")}><span>☆</span>Spotlight</button>
+        <button className={activeSection==="live"?"active":""} onClick={() => jumpToSection("live",".iptv-section")}><span>◉</span>Live TV</button>
+      </nav>
 
       {/* SETTINGS MODAL */}
       {modal === "settings" && (

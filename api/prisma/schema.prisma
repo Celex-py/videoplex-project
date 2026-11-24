@@ -56,6 +56,24 @@ model Video {
   playlistItems PlaylistItem[]
 }
 
+model LibraryContent {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  posterUrl   String?
+  videoUrl    String
+  sourceType  String
+  category    String   @default("Movies")
+  releaseYear Int?
+  featured    Boolean  @default(false)
+  visibility  Visibility @default(UNLISTED)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([visibility, category])
+  @@index([createdAt])
+}
+
 model Playlist {
   id          String   @id @default(cuid())
   name        String

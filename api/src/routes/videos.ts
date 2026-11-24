@@ -17,6 +17,21 @@ async function ownsVideo(userId: string, videoId: string) {
   return video?.channel.ownerId === userId ? video : null;
 }
 
+// GET /api/videos/library — public catalogue of admin-curated titles
+router.get('/library', async (req, res: Response) => {
+  try {
+    const { q, category, limit = '60' } = req.query as Record<string, string>;
+    const where: any = { visibility: 'PUBLIC' };
+    if (q) where.title = { contains: q, mode: 'insensitive' };
+    if (category) where.category = category;
+    const items = await prisma.libraryContent.findMany({
+      where, take: Math.min(parseInt(limit) || 60, 100),
+      orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }],
+    });
+    res.json({ items });
+  } catch (err: any) { res.status(500).json({ error: err.message }); }
+});
+
 // ── STATIC ROUTES FIRST — prevents :id from swallowing "upload-url" / "confirm" ──
 
 // GET /api/videos/upload-url

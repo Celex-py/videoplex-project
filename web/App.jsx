@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import VideoPlexPlayer from "./components/player/VideoPlexPlayer.jsx";
+import AdminContentManager from "./components/admin/AdminContentManager.jsx";
 
 const S = `
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=DM+Mono&display=swap');
@@ -594,6 +595,7 @@ export default function App() {
           <div className="sbs">
             <div className="sbl">Your stuff</div>
             <div className={`sbi${page==="dashboard"?" on":""}`} onClick={() => requireAuth("dashboard")}><span>▦</span> Dashboard</div>
+            {user?.role === "ADMIN" && <div className={`sbi${page==="content-manager"?" on":""}`} onClick={() => go("content-manager")}><span>▤</span> Content manager</div>}
             <div className={`sbi sbi-up${page==="upload"?" on":""}`} onClick={() => { if (!token) { setAuthMode("login"); setModal("auth"); return; } requireChannel("upload"); }}><span>⬆</span> Upload video</div>
           </div>
           <div className="sb-promo">
@@ -704,6 +706,11 @@ export default function App() {
               </div>
               {activeVideo.description && <div className="pdesc">{activeVideo.description}</div>}
             </div>
+          )}
+
+          {/* ADMIN CONTENT MANAGER */}
+          {page === "content-manager" && user?.role === "ADMIN" && (
+            <AdminContentManager request={req} notify={notify} />
           )}
 
           {/* DASHBOARD */}

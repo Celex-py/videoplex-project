@@ -7,6 +7,73 @@ const router = Router();
 // All admin routes require authentication + ADMIN role
 router.use(authenticate, requireRole('ADMIN'));
 
+
+const allowedSources = ['youtube', 'mp4', 'webm', 'hls', 'external'];
+const validUrl = (value: unknown) => {
+  if (typeof value !== 'string' || !value.trim()) return false;
+  try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol); } catch { return false; }
+};
+
+// GET /api/admin/library — catalogue management
+router.get('/library', async (_req, res: Response) => {
+  try {
+    const items = await prisma.libraryContent.findMany({ orderBy: { createdAt: 'desc' } });
+    res.json({ items });
+  } catch (err: any) { res.status(500).json({ error: err.message }); }
+});
+
+// POST /api/admin/library — create a catalogue entry
+router.post('/library', async (req: AuthRequest, res: Response) => {
+  try {
+    const { title, description, posterUrl, videoUrl, sourceType, category, releaseYear, featured, visibility } = req.body;
+    if (!title?.trim() || !validUrl(videoUrl) || !allowedSources.includes(sourceType))
+      return res.status(400).json({ error: 'A title, valid video URL and supported source type are required' });
+    if (posterUrl && !validUrl(posterUrl)) return res.status(400).json({ error: 'Poster URL must be a valid HTTP or HTTPS URL' });
+    if (releaseYear !== undefined && releaseYear !== null && (!Number.isInteger(Number(releaseYear)) || Number(releaseYear) < 1888 || Number(releaseYear) > new Date().getFullYear() + 5))
+      return res.status(400).json({ error: 'Release year is invalid' });
+    if (visibility && !['PUBLIC', 'UNLISTED', 'PRIVATE'].includes(visibility))
+      return res.status(400).json({ error: 'Invalid visibility' });
+    const item = await prisma.libraryContent.create({ data: {
+      title: title.trim(), description: description || null, posterUrl: posterUrl || null,
+      videoUrl: videoUrl.trim(), sourceType, category: category?.trim() || 'Movies',
+      releaseYear: releaseYear ? Number(releaseYear) : null, featured: Boolean(featured),
+      visibility: visibility || 'UNLISTED',
+    } });
+    res.status(201).json({ item });
+  } catch (err: any) { res.status(500).json({ error: err.message }); }
+});
+
+// PATCH /api/admin/library/:id — edit or publish/unpublish
+router.patch('/library/:id', async (req, res: Response) => {
+  try {
+    const { title, description, posterUrl, videoUrl, sourceType, category, releaseYear, featured, visibility } = req.body;
+    if (videoUrl !== undefined && !validUrl(videoUrl)) return res.status(400).json({ error: 'Video URL must be a valid HTTP or HTTPS URL' });
+    if (posterUrl && !validUrl(posterUrl)) return res.status(400).json({ error: 'Poster URL must be a valid HTTP or HTTPS URL' });
+    if (sourceType !== undefined && !allowedSources.includes(sourceType)) return res.status(400).json({ error: 'Unsupported source type' });
+    if (visibility !== undefined && !['PUBLIC', 'UNLISTED', 'PRIVATE'].includes(visibility)) return res.status(400).json({ error: 'Invalid visibility' });
+    const item = await prisma.libraryContent.update({ where: { id: req.params.id }, data: {
+      ...(title !== undefined && { title: title.trim() }),
+      ...(description !== undefined && { description: description || null }),
+      ...(posterUrl !== undefined && { posterUrl: posterUrl || null }),
+      ...(videoUrl !== undefined && { videoUrl: videoUrl.trim() }),
+      ...(sourceType !== undefined && { sourceType }),
+      ...(category !== undefined && { category: category.trim() || 'Movies' }),
+      ...(releaseYear !== undefined && { releaseYear: releaseYear ? Number(releaseYear) : null }),
+      ...(featured !== undefined && { featured: Boolean(featured) }),
+      ...(visibility !== undefined && { visibility }),
+    } });
+    res.json({ item });
+  } catch (err: any) { res.status(500).json({ error: err.message }); }
+});
+
+// DELETE /api/admin/library/:id
+router.delete('/library/:id', async (req, res: Response) => {
+  try {
+    await prisma.libraryContent.delete({ where: { id: req.params.id } });
+    res.json({ message: 'Catalogue item deleted' });
+  } catch (err: any) { res.status(500).json({ error: err.message }); }
+});
+
 // GET /api/admin/stats
 router.get('/stats', async (_req, res: Response) => {
   try {

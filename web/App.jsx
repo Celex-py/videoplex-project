@@ -205,6 +205,7 @@ export default function App() {
 
   // ── Data state ────────────────────────────────────────────────────────
   const [videos, setVideos] = useState([]);
+  const [libraryItems, setLibraryItems] = useState([]);
   const [videosLoading, setVideosLoading] = useState(false);
   const [videosErr, setVideosErr] = useState("");
   const [activeVideo, setActiveVideo] = useState(null);
@@ -354,6 +355,11 @@ export default function App() {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q]);
+
+  useEffect(() => {
+    if (page !== "home" || connState !== "ok") return;
+    req("GET", "/api/videos/library").then(data => setLibraryItems(data.items || [])).catch(() => setLibraryItems([]));
+  }, [page, connState, req]);
 
   // ── Load own live streams ─────────────────────────────────────────────
   const loadLive = useCallback(async () => {
@@ -670,6 +676,27 @@ export default function App() {
                   ))}
                 </div>
               )}
+
+              {libraryItems.length > 0 && (
+                <section className="vp-library-shelf">
+                  <div className="shdr"><div className="stitle">Movies &amp; Videos</div><span className="slink">{libraryItems.length} titles</span></div>
+                  <div className="vgrid">
+                    {libraryItems.map(item => (
+                      <div key={item.id} className="vc" onClick={() => {
+                        setActiveVideo({ ...item, status: "READY", streamUrl: item.videoUrl, channel: { name: "VideoPlex Library" } });
+                        setPage("player");
+                      }}>
+                        <div className="vth">
+                          {item.posterUrl && <img src={item.posterUrl} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}} />}
+                          <div className="vth-ov"><div className="vth-play">▶</div></div>
+                          {item.featured && <span className="bdg" style={{position:"absolute",top:7,left:7,background:"#e05c2f",color:"#fff"}}>FEATURED</span>}
+                        </div>
+                        <div className="vi"><div className="vm"><div className="vt">{item.title}</div><div className="vch">{item.category}{item.releaseYear ? " · "+item.releaseYear : ""}</div><div className="vst">{item.sourceType.toUpperCase()}</div></div></div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
             </div>
           )}
 
@@ -677,7 +704,11 @@ export default function App() {
           {page === "player" && activeVideo && (
             <div className="pg">
               <div className="pv">
-                {activeVideo.status === "READY" && (activeVideo.streamUrl || activeVideo.muxPlaybackId) ? (
+                {activeVideo.status === "READY" && activeVideo.sourceType === "youtube" ? (
+                  <iframe title={activeVideo.title} src={(() => { const match = String(activeVideo.videoUrl || activeVideo.streamUrl || "").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/); return match ? "https://www.youtube-nocookie.com/embed/"+match[1]+"?autoplay=1&rel=0" : ""; })()} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen style={{width:"100%",height:"100%",border:0}} />
+                ) : activeVideo.status === "READY" && activeVideo.sourceType === "external" ? (
+                  <div className="pv-fallback"><div>Open this title on its source platform.</div><a href={activeVideo.videoUrl} target="_blank" rel="noreferrer" style={{color:"#ff7a50"}}>Open source ↗</a></div>
+                ) : activeVideo.status === "READY" && (activeVideo.streamUrl || activeVideo.muxPlaybackId) ? (
                   <VideoPlexPlayer
                     src={activeVideo.streamUrl || `https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`}
                     type={activeVideo.streamUrl

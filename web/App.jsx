@@ -601,7 +601,7 @@ export default function App() {
           <div className="sbs">
             <div className="sbl">Your stuff</div>
             <div className={`sbi${page==="dashboard"?" on":""}`} onClick={() => requireAuth("dashboard")}><span>▦</span> Dashboard</div>
-            {user?.role === "ADMIN" && <div className={`sbi${page==="content-manager"?" on":""}`} onClick={() => go("content-manager")}><span>▤</span> Content manager</div>}
+            {String(user?.role || "").toUpperCase() === "ADMIN" && <div className={`sbi${page==="content-manager"?" on":""}`} onClick={() => go("content-manager")}><span>▤</span> Content manager</div>}
             <div className={`sbi sbi-up${page==="upload"?" on":""}`} onClick={() => { if (!token) { setAuthMode("login"); setModal("auth"); return; } requireChannel("upload"); }}><span>⬆</span> Upload video</div>
           </div>
           <div className="sb-promo">
@@ -740,7 +740,7 @@ export default function App() {
           )}
 
           {/* ADMIN CONTENT MANAGER */}
-          {page === "content-manager" && user?.role === "ADMIN" && (
+          {page === "content-manager" && String(user?.role || "").toUpperCase() === "ADMIN" && (
             <AdminContentManager request={req} notify={notify} />
           )}
 

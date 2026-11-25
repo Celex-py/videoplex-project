@@ -759,7 +759,7 @@ export default function App() {
           )}
 
           {/* ADMIN CONTENT MANAGER */}
-          {page === "content-manager" && String(user?.role || "").toUpperCase() === "ADMIN" && (
+          {page === "content-manager" && ["ADMIN", "OWNER"].includes(String(user?.role || "").trim().toUpperCase()) && (
             <AdminContentManager request={req} notify={notify} />
           )}
 
@@ -780,6 +780,7 @@ export default function App() {
                     <div><div className="dn">{channel.name}</div><div className="ds">{channel.description || "No description"}</div></div>
                     <div style={{ flex: 1 }} />
                     <div style={{ display:"flex", gap:8, flexWrap:"wrap", justifyContent:"flex-end" }}>
+                      {["ADMIN", "OWNER"].includes(String(user?.role || "").trim().toUpperCase()) && <button className="btn bg" onClick={() => go("content-manager")}>Content manager</button>}
                       <button className="btn ba" onClick={() => go("upload")}>+ Upload Video</button>
                       <button className="btn bd" onClick={deleteChannel}>Delete channel</button>
                     </div>

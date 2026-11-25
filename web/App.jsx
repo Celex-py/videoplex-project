@@ -620,7 +620,7 @@ export default function App() {
           <div className="sbs">
             <div className="sbl">Your stuff</div>
             <div className={`sbi${page==="dashboard"?" on":""}`} onClick={() => requireAuth("dashboard")}><span>▦</span> Dashboard</div>
-            {token && ["ADMIN", "OWNER"].includes(String(user?.role || "").trim().toUpperCase()) && <div className={`sbi${page==="content-manager"?" on":""}`} onClick={() => go("content-manager")}><span>▤</span> Content manager</div>}
+            {token && <div className={`sbi${page==="content-manager"?" on":""}`} onClick={() => go("content-manager")}><span>▤</span> Content manager</div>}
             <div className={`sbi sbi-up${page==="upload"?" on":""}`} onClick={() => { if (!token) { setAuthMode("login"); setModal("auth"); return; } requireChannel("upload"); }}><span>⬆</span> Upload video</div>
           </div>
           <div className="sb-promo">
@@ -759,7 +759,7 @@ export default function App() {
           )}
 
           {/* ADMIN CONTENT MANAGER */}
-          {page === "content-manager" && ["ADMIN", "OWNER"].includes(String(user?.role || "").trim().toUpperCase()) && (
+          {page === "content-manager" && token && (
             <AdminContentManager request={req} notify={notify} />
           )}
 

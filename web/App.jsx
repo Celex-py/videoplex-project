@@ -409,6 +409,25 @@ export default function App() {
     notify("Signed out");
   };
 
+  const deleteChannel = async () => {
+    if (!channel) return;
+    const confirmed = window.confirm(
+      `Delete the channel "${channel.name}"? This permanently deletes its uploaded videos, playlists and live streams. This cannot be undone.`
+    );
+    if (!confirmed) return;
+    try {
+      await req("DELETE", "/api/channels/me");
+      setChannel(null);
+      setUser(current => current ? { ...current, role: "VIEWER" } : current);
+      setVideos([]);
+      setLiveStreams([]);
+      setPage("dashboard");
+      notify("Channel and its content deleted");
+    } catch (e) {
+      notify(`Could not delete channel: ${e.message}`, true);
+    }
+  };
+
   const createChannel = async () => {
     setChanErr("");
     if (!chanForm.name) { setChanErr("Channel name is required"); return; }
@@ -601,7 +620,7 @@ export default function App() {
           <div className="sbs">
             <div className="sbl">Your stuff</div>
             <div className={`sbi${page==="dashboard"?" on":""}`} onClick={() => requireAuth("dashboard")}><span>▦</span> Dashboard</div>
-            {["ADMIN", "OWNER"].includes(String(user?.role || "").toUpperCase()) && <div className={`sbi${page==="content-manager"?" on":""}`} onClick={() => go("content-manager")}><span>▤</span> Content manager</div>}
+            {token && ["ADMIN", "OWNER"].includes(String(user?.role || "").trim().toUpperCase()) && <div className={`sbi${page==="content-manager"?" on":""}`} onClick={() => go("content-manager")}><span>▤</span> Content manager</div>}
             <div className={`sbi sbi-up${page==="upload"?" on":""}`} onClick={() => { if (!token) { setAuthMode("login"); setModal("auth"); return; } requireChannel("upload"); }}><span>⬆</span> Upload video</div>
           </div>
           <div className="sb-promo">
@@ -760,7 +779,10 @@ export default function App() {
                     <div className="dav">{initials(channel.name)}</div>
                     <div><div className="dn">{channel.name}</div><div className="ds">{channel.description || "No description"}</div></div>
                     <div style={{ flex: 1 }} />
-                    <button className="btn ba" onClick={() => go("upload")}>+ Upload Video</button>
+                    <div style={{ display:"flex", gap:8, flexWrap:"wrap", justifyContent:"flex-end" }}>
+                      <button className="btn ba" onClick={() => go("upload")}>+ Upload Video</button>
+                      <button className="btn bd" onClick={deleteChannel}>Delete channel</button>
+                    </div>
                   </div>
                   <div className="sgrid">
                     <div className="sc"><div className="sl">Your videos</div><div className="sv">{devVids.length}</div></div>

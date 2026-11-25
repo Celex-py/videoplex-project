@@ -4,8 +4,10 @@ import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
-// All admin routes require authentication + ADMIN role
-router.use(authenticate, requireRole('ADMIN', 'OWNER'));
+// All admin routes require authentication. Catalogue management is available to
+// platform admins and channel owners; platform-wide admin tools remain ADMIN-only.
+router.use(authenticate);
+router.use('/library', requireRole('ADMIN', 'OWNER'));
 
 
 const allowedSources = ['youtube', 'mp4', 'webm', 'hls', 'external'];
@@ -73,6 +75,9 @@ router.delete('/library/:id', async (req, res: Response) => {
     res.json({ message: 'Catalogue item deleted' });
   } catch (err: any) { res.status(500).json({ error: err.message }); }
 });
+
+// The remaining platform-wide administration endpoints are ADMIN-only.
+router.use(requireRole('ADMIN'));
 
 // GET /api/admin/stats
 router.get('/stats', async (_req, res: Response) => {

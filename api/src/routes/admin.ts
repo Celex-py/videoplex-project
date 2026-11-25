@@ -5,7 +5,7 @@ import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 const router = Router();
 
 // All admin routes require authentication + ADMIN role
-router.use(authenticate, requireRole('ADMIN'));
+router.use(authenticate, requireRole('ADMIN', 'OWNER'));
 
 
 const allowedSources = ['youtube', 'mp4', 'webm', 'hls', 'external'];

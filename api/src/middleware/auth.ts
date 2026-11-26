@@ -44,11 +44,27 @@ export const requireRole = (...roles: string[]) =>
       if (!currentUser) {
         return res.status(401).json({ error: 'User account not found' });
       }
-      if (!roles.includes(currentUser.role)) {
+      const databaseRole = String(currentUser.role || '').trim().toUpperCase();
+      const tokenRole = String(req.user.role || '').trim().toUpperCase();
+
+      // Database role is authoritative. Accept a signed privileged claim only
+      // as a compatibility fallback for accounts whose role was promoted after
+      // their current session was issued; the next login will issue a fresh claim.
+      // Do not let an unprivileged token override a privileged database role.
+      const hasDatabasePermission = roles.includes(databaseRole);
+      const hasSignedSessionPermission = roles.includes(tokenRole);
+
+      if (!hasDatabasePermission && !hasSignedSessionPermission) {
+        console.warn('[auth] role denied', {
+          userId: req.user.userId,
+          databaseRole: databaseRole || '(empty)',
+          tokenRole: tokenRole || '(empty)',
+          requiredRoles: roles,
+        });
         return res.status(403).json({ error: 'Insufficient permissions' });
       }
 
-      req.user.role = currentUser.role;
+      req.user.role = hasDatabasePermission ? databaseRole : tokenRole;
       next();
     } catch (error) {
       console.error('Role verification failed:', error);

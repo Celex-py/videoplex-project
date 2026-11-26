@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import VideoPlexPlayer from "./components/player/VideoPlexPlayer.jsx";
-import AdminContentManager from "./components/admin/AdminContentManager.jsx";
 
 const S = `
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=DM+Mono&display=swap');
@@ -205,7 +204,6 @@ export default function App() {
 
   // ── Data state ────────────────────────────────────────────────────────
   const [videos, setVideos] = useState([]);
-  const [libraryItems, setLibraryItems] = useState([]);
   const [videosLoading, setVideosLoading] = useState(false);
   const [videosErr, setVideosErr] = useState("");
   const [activeVideo, setActiveVideo] = useState(null);
@@ -355,11 +353,6 @@ export default function App() {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q]);
-
-  useEffect(() => {
-    if (page !== "home" || connState !== "ok") return;
-    req("GET", "/api/videos/library").then(data => setLibraryItems(data.items || [])).catch(() => setLibraryItems([]));
-  }, [page, connState, req]);
 
   // ── Load own live streams ─────────────────────────────────────────────
   const loadLive = useCallback(async () => {
@@ -620,7 +613,6 @@ export default function App() {
           <div className="sbs">
             <div className="sbl">Your stuff</div>
             <div className={`sbi${page==="dashboard"?" on":""}`} onClick={() => requireAuth("dashboard")}><span>▦</span> Dashboard</div>
-            {token && <div className={`sbi${page==="content-manager"?" on":""}`} onClick={() => go("content-manager")}><span>▤</span> Content manager</div>}
             <div className={`sbi sbi-up${page==="upload"?" on":""}`} onClick={() => { if (!token) { setAuthMode("login"); setModal("auth"); return; } requireChannel("upload"); }}><span>⬆</span> Upload video</div>
           </div>
           <div className="sb-promo">
@@ -696,26 +688,6 @@ export default function App() {
                 </div>
               )}
 
-              {libraryItems.length > 0 && (
-                <section className="vp-library-shelf">
-                  <div className="shdr"><div className="stitle">Movies &amp; Videos</div><span className="slink">{libraryItems.length} titles</span></div>
-                  <div className="vgrid">
-                    {libraryItems.map(item => (
-                      <div key={item.id} className="vc" onClick={() => {
-                        setActiveVideo({ ...item, status: "READY", streamUrl: item.videoUrl, channel: { name: "VideoPlex Library" } });
-                        setPage("player");
-                      }}>
-                        <div className="vth">
-                          {item.posterUrl && <img src={item.posterUrl} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}} />}
-                          <div className="vth-ov"><div className="vth-play">▶</div></div>
-                          {item.featured && <span className="bdg" style={{position:"absolute",top:7,left:7,background:"#e05c2f",color:"#fff"}}>FEATURED</span>}
-                        </div>
-                        <div className="vi"><div className="vm"><div className="vt">{item.title}</div><div className="vch">{item.category}{item.releaseYear ? " · "+item.releaseYear : ""}</div><div className="vst">{item.sourceType.toUpperCase()}</div></div></div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
             </div>
           )}
 
@@ -758,11 +730,6 @@ export default function App() {
             </div>
           )}
 
-          {/* ADMIN CONTENT MANAGER */}
-          {page === "content-manager" && token && (
-            <AdminContentManager request={req} notify={notify} />
-          )}
-
           {/* DASHBOARD */}
           {page === "dashboard" && (
             <div className="pg">
@@ -780,7 +747,6 @@ export default function App() {
                     <div><div className="dn">{channel.name}</div><div className="ds">{channel.description || "No description"}</div></div>
                     <div style={{ flex: 1 }} />
                     <div style={{ display:"flex", gap:8, flexWrap:"wrap", justifyContent:"flex-end" }}>
-                      {["ADMIN", "OWNER"].includes(String(user?.role || "").trim().toUpperCase()) && <button className="btn bg" onClick={() => go("content-manager")}>Content manager</button>}
                       <button className="btn ba" onClick={() => go("upload")}>+ Upload Video</button>
                       <button className="btn bd" onClick={deleteChannel}>Delete channel</button>
                     </div>

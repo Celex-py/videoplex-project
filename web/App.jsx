@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import VideoPlexPlayer from "./components/player/VideoPlexPlayer.jsx";
 
 const S = `
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=DM+Mono&display=swap');
@@ -231,9 +232,24 @@ export default function App() {
       try {
         const savedUrl = await window.storage.get("videoplex:apiUrl", false);
         if (savedUrl?.value) {
-          setApiUrl(savedUrl.value);
-          setApiUrlDraft(savedUrl.value);
+          const saved = String(savedUrl.value).replace(/\/$/, "");
+          const remoteBrowser = typeof window !== "undefined" &&
+            !["localhost", "127.0.0.1"].includes(window.location.hostname);
+          const pointsToLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(saved);
+          // A localhost URL saved on the developer's machine cannot be reached
+          // from a Codespaces browser. Use the same-origin Vite API proxy instead.
+          if (remoteBrowser && pointsToLocalhost) {
+            setApiUrl("");
+            setApiUrlDraft("");
+            setConnState("unset");
+            try { await window.storage.delete("videoplex:apiUrl", false); } catch {}
+          } else {
+            setApiUrl(saved);
+            setApiUrlDraft(saved);
+          }
         } else {
+          setApiUrl("");
+          setApiUrlDraft("");
           setConnState("unset");
         }
       } catch {
@@ -249,13 +265,13 @@ export default function App() {
 
   // ── Fetch wrapper ────────────────────────────────────────────────────
   const req = useCallback(async (method, path, body) => {
-    if (!apiUrl) throw new Error("No backend connected");
+    if (!apiUrl && !import.meta.env.DEV) throw new Error("No backend connected");
     const headers = {};
     if (token) headers["Authorization"] = `Bearer ${token}`;
     if (body) headers["Content-Type"] = "application/json";
     let res;
     try {
-      res = await fetch(`${apiUrl}${path}`, {
+      res = await fetch(`${apiUrl || ""}${path}`, {
         method, headers, body: body ? JSON.stringify(body) : undefined,
       });
     } catch (e) {
@@ -271,12 +287,14 @@ export default function App() {
     setConnState("connecting");
     setConnError("");
     try {
-      const res = await fetch(`${url}/api/health`);
+      const res = await fetch(`${url || ""}/api/health`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (data.status !== "ok") throw new Error("Unexpected response from /api/health");
-      setApiUrl(url);
-      localStorage.setItem("videoplex:apiUrl", url);
+      const normalizedUrl = String(url || "").replace(/\/$/, "");
+      setApiUrl(normalizedUrl);
+      if (normalizedUrl) localStorage.setItem("videoplex:apiUrl", normalizedUrl);
+      else localStorage.removeItem("videoplex:apiUrl");
       setConnState("ok");
       notify("Connected to backend");
     } catch (e) {
@@ -384,6 +402,25 @@ export default function App() {
     notify("Signed out");
   };
 
+  const deleteChannel = async () => {
+    if (!channel) return;
+    const confirmed = window.confirm(
+      `Delete the channel "${channel.name}"? This permanently deletes its uploaded videos, playlists and live streams. This cannot be undone.`
+    );
+    if (!confirmed) return;
+    try {
+      await req("DELETE", "/api/channels/me");
+      setChannel(null);
+      setUser(current => current ? { ...current, role: "VIEWER" } : current);
+      setVideos([]);
+      setLiveStreams([]);
+      setPage("dashboard");
+      notify("Channel and its content deleted");
+    } catch (e) {
+      notify(`Could not delete channel: ${e.message}`, true);
+    }
+  };
+
   const createChannel = async () => {
     setChanErr("");
     if (!chanForm.name) { setChanErr("Channel name is required"); return; }
@@ -402,7 +439,15 @@ export default function App() {
   };
 
   // ── Navigation guards ────────────────────────────────────────────────
-  const go = (p) => { setPage(p); setActiveVideo(null); };
+  const [activeSection, setActiveSection] = useState("home");
+  const go = (p) => { setPage(p); setActiveVideo(null); if (p === "home") setActiveSection("home"); };
+  const jumpToSection = (section, selector) => {
+    if (page !== "home") setPage("home");
+    setActiveSection(section);
+    window.setTimeout(() => {
+      document.querySelector(selector)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 90);
+  };
   const requireAuth = (p) => {
     if (connState !== "ok") { setModal("settings"); return; }
     if (!token) { setAuthMode("login"); setModal("auth"); return; }
@@ -559,12 +604,22 @@ export default function App() {
       <div className="body">
         <aside className="sb">
           <div className="sbs">
-            <div className={`sbi${page==="home"?" on":""}`} onClick={() => go("home")}><span>⌂</span> Home</div>
+            <div className="sbl">Discover</div>
+            <div className={`sbi${activeSection==="home"?" on":""}`} onClick={() => go("home")}><span>⌂</span> Home</div>
+            <div className={`sbi${activeSection==="movies"?" on":""}`} onClick={() => jumpToSection("movies",".mn .shdr")}><span>▣</span> Movies & Videos</div>
+            <div className={`sbi${activeSection==="spotlight"?" on":""}`} onClick={() => jumpToSection("spotlight",".featured-streams")}><span>☆</span> Spotlight Streams</div>
+            <div className={`sbi${activeSection==="live"?" on":""}`} onClick={() => jumpToSection("live",".iptv-section")}><span>◉</span> Live TV</div>
           </div>
           <div className="sbs">
             <div className="sbl">Your stuff</div>
             <div className={`sbi${page==="dashboard"?" on":""}`} onClick={() => requireAuth("dashboard")}><span>▦</span> Dashboard</div>
             <div className={`sbi sbi-up${page==="upload"?" on":""}`} onClick={() => { if (!token) { setAuthMode("login"); setModal("auth"); return; } requireChannel("upload"); }}><span>⬆</span> Upload video</div>
+          </div>
+          <div className="sb-promo">
+            <div className="sb-promo-icon">✦</div>
+            <strong>Your media, all in one place</strong>
+            <span>Discover videos and live channels from one hub.</span>
+            <button type="button" onClick={() => jumpToSection("live",".iptv-section")}>Explore Live TV <b>→</b></button>
           </div>
         </aside>
 
@@ -632,6 +687,7 @@ export default function App() {
                   ))}
                 </div>
               )}
+
             </div>
           )}
 
@@ -639,19 +695,18 @@ export default function App() {
           {page === "player" && activeVideo && (
             <div className="pg">
               <div className="pv">
-                {activeVideo.status === "READY" && (activeVideo.streamUrl || activeVideo.muxPlaybackId) ? (
-                  activeVideo.streamUrl ? (
-  <video controls src={activeVideo.streamUrl} />
-) : canPlayHls ? (
-  <video controls src={`https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`} />
-) : (
-                    <div className="pv-fallback">
-                      <div style={{ fontSize: 24 }}>▶</div>
-                      <div>This browser can't play HLS inline.</div>
-                      <a href={`https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`} target="_blank" rel="noreferrer"
-                        style={{ color: "#ff7a50", fontSize: 11 }}>Open stream in new tab ↗</a>
-                    </div>
-                  )
+                {activeVideo.status === "READY" && activeVideo.sourceType === "youtube" ? (
+                  <iframe title={activeVideo.title} src={(() => { const match = String(activeVideo.videoUrl || activeVideo.streamUrl || "").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/); return match ? "https://www.youtube-nocookie.com/embed/"+match[1]+"?autoplay=1&rel=0" : ""; })()} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen style={{width:"100%",height:"100%",border:0}} />
+                ) : activeVideo.status === "READY" && activeVideo.sourceType === "external" ? (
+                  <div className="pv-fallback"><div>Open this title on its source platform.</div><a href={activeVideo.videoUrl} target="_blank" rel="noreferrer" style={{color:"#ff7a50"}}>Open source ↗</a></div>
+                ) : activeVideo.status === "READY" && (activeVideo.streamUrl || activeVideo.muxPlaybackId) ? (
+                  <VideoPlexPlayer
+                    src={activeVideo.streamUrl || `https://stream.mux.com/${activeVideo.muxPlaybackId}.m3u8`}
+                    type={activeVideo.streamUrl
+                      ? (/\.m3u8(?:$|\?)/i.test(activeVideo.streamUrl) ? "hls" : /\.webm(?:$|\?)/i.test(activeVideo.streamUrl) ? "webm" : "mp4")
+                      : "hls"}
+                    title={activeVideo.title}
+                  />
                 ) : (
                   <div className="pv-fallback">
                     {activeVideo.status === "FAILED"
@@ -691,7 +746,10 @@ export default function App() {
                     <div className="dav">{initials(channel.name)}</div>
                     <div><div className="dn">{channel.name}</div><div className="ds">{channel.description || "No description"}</div></div>
                     <div style={{ flex: 1 }} />
-                    <button className="btn ba" onClick={() => go("upload")}>+ Upload Video</button>
+                    <div style={{ display:"flex", gap:8, flexWrap:"wrap", justifyContent:"flex-end" }}>
+                      <button className="btn ba" onClick={() => go("upload")}>+ Upload Video</button>
+                      <button className="btn bd" onClick={deleteChannel}>Delete channel</button>
+                    </div>
                   </div>
                   <div className="sgrid">
                     <div className="sc"><div className="sl">Your videos</div><div className="sv">{devVids.length}</div></div>
@@ -860,6 +918,12 @@ export default function App() {
           )}
         </main>
       </div>
+      <nav className="mobile-nav" aria-label="Primary navigation">
+        <button className={activeSection==="home"?"active":""} onClick={() => go("home")}><span>⌂</span>Home</button>
+        <button className={activeSection==="movies"?"active":""} onClick={() => jumpToSection("movies",".mn .shdr")}><span>▣</span>Movies</button>
+        <button className={activeSection==="spotlight"?"active":""} onClick={() => jumpToSection("spotlight",".featured-streams")}><span>☆</span>Spotlight</button>
+        <button className={activeSection==="live"?"active":""} onClick={() => jumpToSection("live",".iptv-section")}><span>◉</span>Live TV</button>
+      </nav>
 
       {/* SETTINGS MODAL */}
       {modal === "settings" && (

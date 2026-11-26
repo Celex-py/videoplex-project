@@ -10,31 +10,40 @@ import "../FeaturedStreams.css";
 import "../HeroCarousel.css";
 import "../Theme.css";
 
-function HomeMount({ children }) {
+function SectionMount() {
+  const [view, setView] = useState("home");
   const [host, setHost] = useState(null);
 
   useEffect(() => {
     const findHost = () => {
-      const home = [...document.querySelectorAll('.sbi.on')].find(el => el.textContent?.includes('Home'));
-      const nextHost = home ? document.querySelector('.mn .pg') : null;
+      const active = [...document.querySelectorAll(".sb .sbi.on, .mobile-nav button.active")];
+      const label = active.map(el => el.textContent || "").join(" ").toLowerCase();
+      const nextView = label.includes("spotlight") ? "spotlight" : label.includes("live tv") ? "live" : "home";
+      const main = document.querySelector(".mn");
+      const home = document.querySelector(".mn .pg");
+      const nextHost = nextView === "home" ? home : main;
+      if (main) main.classList.toggle("vp-section-standalone", nextView !== "home");
+      setView(nextView);
       setHost(nextHost || null);
     };
     const observer = new MutationObserver(findHost);
-    observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
-    const timer = window.setInterval(findHost, 500);
+    observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] });
+    const timer = window.setInterval(findHost, 350);
     findHost();
     return () => { observer.disconnect(); window.clearInterval(timer); };
   }, []);
 
   if (!host) return null;
-  return createPortal(children, host);
+  if (view === "spotlight") return createPortal(<FeaturedStreams />, host);
+  if (view === "live") return createPortal(<LiveTV />, host);
+  return createPortal(<><HeroCarousel /><FeaturedStreams /><LiveTV /></>, host);
 }
 
 function Root() {
   return (
     <React.StrictMode>
       <App />
-      <HomeMount><HeroCarousel /><FeaturedStreams /><LiveTV /></HomeMount>
+      <SectionMount />
     </React.StrictMode>
   );
 }

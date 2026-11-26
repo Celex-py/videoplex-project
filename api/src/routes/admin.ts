@@ -4,8 +4,9 @@ import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
-// All admin routes require authentication + ADMIN role
-router.use(authenticate, requireRole('ADMIN'));
+// All platform administration routes require an authenticated ADMIN.
+router.use(authenticate);
+router.use(requireRole('ADMIN'));
 
 // GET /api/admin/stats
 router.get('/stats', async (_req, res: Response) => {

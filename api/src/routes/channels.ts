@@ -90,29 +90,32 @@ router.patch('/me', authenticate, async (req: AuthRequest, res: Response) => {
 });
 
 // DELETE /api/channels/me — full cascade in a transaction
+// DELETE /api/channels/me — owner-only channel removal with dependent content cleanup
 router.delete('/me', authenticate, async (req: AuthRequest, res: Response) => {
   try {
+    const ownerId = req.user!.userId;
     const channel = await prisma.channel.findUnique({
-      where: { ownerId: req.user!.userId },
+      where: { ownerId },
       include: { videos: { select: { id: true } } },
     });
     if (!channel) return res.status(404).json({ error: 'Channel not found' });
 
-    const videoIds = channel.videos.map((v) => v.id);
+    await prisma.$transaction(async (tx) => {
+      const videoIds = channel.videos.map((video) => video.id);
+      await tx.playlistItem.deleteMany({ where: { videoId: { in: videoIds } } });
+      await tx.video.deleteMany({ where: { channelId: channel.id } });
+      await tx.playlistItem.deleteMany({ where: { playlist: { channelId: channel.id } } });
+      await tx.playlist.deleteMany({ where: { channelId: channel.id } });
+      await tx.liveStream.deleteMany({ where: { channelId: channel.id } });
+      await tx.channel.delete({ where: { id: channel.id, ownerId } });
+      // Channel ownership is separate from platform ADMIN privileges.
+      await tx.user.updateMany({ where: { id: ownerId, role: 'OWNER' }, data: { role: 'VIEWER' } });
+    });
 
-    await prisma.$transaction([
-      prisma.playlistItem.deleteMany({ where: { videoId: { in: videoIds } } }),
-      prisma.video.deleteMany(       { where: { channelId: channel.id } }),
-      prisma.playlistItem.deleteMany({ where: { playlist: { channelId: channel.id } } }),
-      prisma.playlist.deleteMany(    { where: { channelId: channel.id } }),
-      prisma.liveStream.deleteMany(  { where: { channelId: channel.id } }),
-      prisma.channel.delete(         { where: { id: channel.id } }),
-      prisma.user.update(            { where: { id: req.user!.userId }, data: { role: 'VIEWER' } }),
-    ]);
-
-    res.json({ message: 'Channel deleted' });
+    res.json({ message: 'Channel and associated content deleted' });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('Channel deletion failed:', err);
+    res.status(500).json({ error: 'Could not delete channel. No changes were applied.' });
   }
 });
 
